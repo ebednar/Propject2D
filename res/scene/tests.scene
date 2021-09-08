@@ -1,0 +1,10 @@
+#models:
+cube res/models/cube.obj
+#vshaders:
+pbr_shader res/shaders/pbr_vert.glsl 
+light_shader res/shaders/light_vertex.glsl
+#fshaders:
+pbr_shader res/shaders/pbr_frag.glsl
+light_shader res/shaders/light_fragment.glsl
+#materials:
+base 0.0f, 1.0f, 0.0f, 1.0f, 0.9f, 0.1f
