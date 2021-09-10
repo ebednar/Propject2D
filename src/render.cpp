@@ -12,10 +12,10 @@ void Render::init(float width, float height)
 
 void Render::draw_scene(Scene* scene, Camera* cam)
 {
-	int length = scene->ents.size();
+	int length = scene->ents_numb;
 	for (int i = 0; i < length; ++i)
 	{
-		Entity* ent = scene->ents[i];
+		Entity* ent = &scene->ents[i];
 		Model* mod = ent->mod;
 		glUseProgram(mod->shader_id);
 		glBindVertexArray(mod->vao);
@@ -34,14 +34,19 @@ void Render::draw_scene(Scene* scene, Camera* cam)
 		unsigned int proj_loc = glGetUniformLocation(mod->shader_id, "u_P");
 		glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
 
-		glUniform3f(glGetUniformLocation(mod->shader_id, "albedo"), ent->mod->material->albedo[0], ent->mod->material->albedo[1], ent->mod->material->albedo[2]);
-		glUniform1f(glGetUniformLocation(mod->shader_id, "ao"), ent->mod->material->ao);
-		glUniform3f(glGetUniformLocation(mod->shader_id, "camPos"), cam->pos.x, cam->pos.y, cam->pos.z);
-		glUniform1f(glGetUniformLocation(mod->shader_id, "metallic"), ent->mod->material->metallic);
-		glUniform1f(glGetUniformLocation(mod->shader_id, "roughness"), ent->mod->material->roughness);
-		
-		glUniform3f(glGetUniformLocation(mod->shader_id, "lightPositions[0]"), scene->point_lights[0].position.x, scene->point_lights[0].position.y, scene->point_lights[0].position.z);
-		glUniform3f(glGetUniformLocation(mod->shader_id, "lightColors[0]"), scene->point_lights[0].color.x, scene->point_lights[0].color.y, scene->point_lights[0].color.z);
+		glUniform1i(glGetUniformLocation(mod->shader_id, "lightNumb"), 1);
+		glUniform3f(glGetUniformLocation(mod->shader_id, "lightPos"), scene->point_lights[0].position.x, scene->point_lights[0].position.y, scene->point_lights[0].position.z);
+		glUniform3f(glGetUniformLocation(mod->shader_id, "viewPos"), cam->pos.x, cam->pos.y, cam->pos.z);
+		glUniform1i(glGetUniformLocation(mod->shader_id, "material.diffuse"), 0);
+		glUniform3f(glGetUniformLocation(mod->shader_id, "material.specular"), 0.5f, 0.5f, 0.5f);
+		glUniform1f(glGetUniformLocation(mod->shader_id, "material.shininess"), 16.0f);
+		glUniform3f(glGetUniformLocation(mod->shader_id, "light.ambient"), 0.3f, 0.3f, 0.3f);
+		glUniform3f(glGetUniformLocation(mod->shader_id, "light.diffuse"), 0.8f, 0.8f, 0.8f);
+		glUniform3f(glGetUniformLocation(mod->shader_id, "light.specular"), 0.5f, 0.5f, 0.5f);
+		glUniform1f(glGetUniformLocation(mod->shader_id, "light.constant"), 1.0f);
+		glUniform1f(glGetUniformLocation(mod->shader_id, "light.linear"), 0.045f);
+		glUniform1f(glGetUniformLocation(mod->shader_id, "light.quadratic"), 0.0075f);
+		glDrawArrays(GL_TRIANGLES, 0, mod->ind_number);
 
 		glDrawArrays(GL_TRIANGLES, 0, mod->ind_number);
 	}

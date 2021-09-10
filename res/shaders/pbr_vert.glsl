@@ -16,7 +16,7 @@ void main()
 {
     TexCoords = aTexCoords;
     WorldPos = vec3(u_M * vec4(aPos, 1.0));
-    Normal = mat3(u_M) * aNormal;   
+    Normal = mat3(u_M) * aNormal;
 
     gl_Position =  u_P * u_V * vec4(WorldPos, 1.0);
 }

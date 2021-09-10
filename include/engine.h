@@ -11,7 +11,6 @@
 class Engine {
 public:
 	Camera						cam;
-	std::vector<Model *>		models;
 	Scene						scene;
 	Controls					controls;
 	Skybox						skybox;
@@ -24,7 +23,6 @@ public:
 			~Engine();
 	void	init_engine(int width, int height);
 	void	run_engine();
-	void	add_model(Model *mod);
 	void	add_entity(Entity *ent);
 	void	set_player(Entity *ent);
 	void	add_light_source(glm::vec3 l_pos, glm::vec3 color);

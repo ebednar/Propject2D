@@ -6,15 +6,15 @@
 
 Engine::~Engine()
 {
-	int length = models.size();
+	/*int length = models.size();
 	for (int i = 0; i < length; ++i)
 	{
 		delete models[i]->vertices;
 		delete models[i];
-	}
-	length = scene.ents.size();
-	for (int i = 0; i < length; ++i)
-		delete scene.ents[i];
+	}*/
+	//int length = scene.ents.size();
+	//for (int i = 0; i < length; ++i)
+	//	delete scene.ents[i];
 	std::cout << "Engine off" << std::endl;
 }
 
@@ -47,17 +47,13 @@ void Engine::init_engine(int width, int height)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	this->width = width;
 	this->height = height;
+
 	controls.yaw = cam.yaw;
 	controls.pitch = cam.pitch;
+
 	rend.init(static_cast<float>(width), static_cast<float>(height));
-	std::vector<std::string> faces;
-	faces.push_back("res/cubemaps/right.jpg");
-	faces.push_back("res/cubemaps/left.jpg");
-	faces.push_back("res/cubemaps/top.jpg");
-	faces.push_back("res/cubemaps/bottom.jpg");
-	faces.push_back("res/cubemaps/front.jpg");
-	faces.push_back("res/cubemaps/back.jpg");
-	skybox.init(faces);
+	
+	skybox.init();
 	skybox.set_shader("res/shaders/skybox_vert.glsl", "res/shaders/skybox_frag.glsl");
 }
 
@@ -75,20 +71,20 @@ void Engine::run_engine()
 		if (timer >= 1.0)
 		{
 			timer -= 1.0;
-			//std::cout << "fps - " << fps << std::endl;
+			std::cout << "fps - " << fps << std::endl;
 			fps = 0;
 		}
 		old_time = glfwGetTime();
 
 		cam.speed = 8.0f * delta_time;
-		if (controls.keys[GLFW_KEY_W])
-			cam.pos += cam.speed * cam.front;
-		if (controls.keys[GLFW_KEY_S])
-			cam.pos -= cam.speed * cam.front;
-		if (controls.keys[GLFW_KEY_A])
-			cam.pos -= cam.speed * glm::normalize(glm::cross(cam.front, cam.up));
-		if (controls.keys[GLFW_KEY_D])
-			cam.pos += cam.speed * glm::normalize(glm::cross(cam.front, cam.up));
+		if (controls.keys[GLFW_KEY_UP])
+			cam.pos.y += cam.speed;
+		if (controls.keys[GLFW_KEY_DOWN])
+			cam.pos.y -= cam.speed;
+		if (controls.keys[GLFW_KEY_LEFT])
+			cam.pos.x -= cam.speed;
+		if (controls.keys[GLFW_KEY_RIGHT])
+			cam.pos.x += cam.speed;
 		cam.yaw = controls.yaw;
 		cam.pitch = controls.pitch;
 
@@ -104,14 +100,9 @@ void Engine::run_engine()
 	glfwTerminate();
 }
 
-void Engine::add_model(Model *mod)
+void Engine::add_entity(Entity *ent_ptr)
 {
-	models.push_back(mod);
-}
-
-void Engine::add_entity(Entity *ent)
-{
-	scene.add_entity(ent);
+	scene.add_entity(ent_ptr);
 }
 
 void Engine::set_player(Entity *ent)

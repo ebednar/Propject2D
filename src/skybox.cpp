@@ -5,8 +5,16 @@
 #include <iostream>
 #include <vector>
 
-void Skybox::init(std::vector<std::string> faces)
+void Skybox::init()
 {
+    std::vector<std::string> faces;
+    faces.push_back("res/cubemaps/right.jpg");
+    faces.push_back("res/cubemaps/left.jpg");
+    faces.push_back("res/cubemaps/top.jpg");
+    faces.push_back("res/cubemaps/bottom.jpg");
+    faces.push_back("res/cubemaps/front.jpg");
+    faces.push_back("res/cubemaps/back.jpg");
+
     float skyboxVertices[] = {
         // positions          
         -1.0f,  1.0f, -1.0f,

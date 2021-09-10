@@ -11,6 +11,6 @@ public:
 	unsigned int	texture;
 	int				shader_id;
 public:
-	void	init(std::vector<std::string> faces);
+	void	init();
 	void	set_shader(const char* vPath, const char* fpath);
 };
