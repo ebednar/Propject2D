@@ -8,7 +8,6 @@ Entity::Entity()
 	angle[1] = 0.0f;
 	angle[2] = 0.0f;
 	scale(1.0f, 1.0f, 1.0f);
-
 }
 
 void	Entity::update()

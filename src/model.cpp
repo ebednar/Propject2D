@@ -1,8 +1,5 @@
 #include "model.h"
 #include "glad.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
-#include "shader.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -184,37 +181,4 @@ void Model::vertex_buffer()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
-}
-
-void Model::set_shader(const char *vPath, const char* fSPath)
-{
-	create_shader(&shader_id, vPath, fSPath);
-}
-
-void Model:: load_texture(const char* path)
-{
-	int nrChannels;
-
-	text_data = stbi_load(path, &text_width, &text_height, &nrChannels, 0);
-	if (!text_data)
-		std::cout << "can't load texture file" << std::endl;
-	bind_texture();
-}
-
-void Model::bind_texture()
-{
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, text_width, text_height, 0, GL_RGB, GL_UNSIGNED_BYTE, text_data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	stbi_image_free(text_data);
-}
-
-void Model::set_material(Material* material)
-{
-	this->material = material;
 }

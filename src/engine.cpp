@@ -6,15 +6,15 @@
 
 Engine::~Engine()
 {
-	/*int length = models.size();
-	for (int i = 0; i < length; ++i)
+	int length = scene.model_atlas.size();
+	for (auto mod : scene.model_atlas)
 	{
-		delete models[i]->vertices;
-		delete models[i];
-	}*/
-	//int length = scene.ents.size();
-	//for (int i = 0; i < length; ++i)
-	//	delete scene.ents[i];
+		delete mod.second->vertices;
+		delete mod.second;
+	}
+	length = scene.ents.size();
+	for (auto ent : scene.ents)
+		delete ent;
 	std::cout << "Engine off" << std::endl;
 }
 
@@ -45,6 +45,7 @@ void Engine::init_engine(int width, int height)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendEquation(GL_FUNC_ADD);
 	this->width = width;
 	this->height = height;
 
@@ -89,6 +90,7 @@ void Engine::run_engine()
 		cam.pitch = controls.pitch;
 
 		cam.update_free();
+		scene.update_scene();
 		rend.draw_skybox(&skybox, &cam);
 		rend.draw_scene(&scene, &cam);
 

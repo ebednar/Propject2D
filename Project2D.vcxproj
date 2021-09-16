@@ -537,6 +537,7 @@
     <ClInclude Include="include\khrplatform.h" />
     <ClInclude Include="include\material.h" />
     <ClInclude Include="include\model.h" />
+    <ClInclude Include="include\player.h" />
     <ClInclude Include="include\render.h" />
     <ClInclude Include="include\sandbox.h" />
     <ClInclude Include="include\scene.h" />
@@ -684,6 +685,7 @@
     <None Include="include\glm\gtx\vector_angle.inl" />
     <None Include="include\glm\gtx\vector_query.inl" />
     <None Include="include\glm\gtx\wrap.inl" />
+    <None Include="res\scene\test.scene" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glm\detail\glm.cpp" />
@@ -695,6 +697,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\material.cpp" />
     <ClCompile Include="src\model.cpp" />
+    <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\render.cpp" />
     <ClCompile Include="src\sandbox.cpp" />
     <ClCompile Include="src\scene.cpp" />
