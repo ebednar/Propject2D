@@ -4,5 +4,7 @@
 class Sandbox
 {
 public:
-	void	place_ent(Engine* eng);
+	Engine* eng;
+public:
+	void	place_ent();
 };

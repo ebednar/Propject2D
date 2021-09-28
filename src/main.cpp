@@ -8,7 +8,8 @@ int		main(void)
 	
 	srand(time(NULL));
 	engine.init_engine(1280, 720);
-	sandbox.place_ent(&engine);
+	sandbox.eng = &engine;
+	sandbox.place_ent();
 	engine.run_engine();
 	return 0;
 }

@@ -1,2 +1,7 @@
 #player
 sprite base player 0.0 0.0 0.0
+#obstacle
+sprite base player 2.0 0.0 0.0
+#light
+cube light warrior 1.0 0.0 2.0
+0.8 0.4 0.8 1.0 0.045 0.0075

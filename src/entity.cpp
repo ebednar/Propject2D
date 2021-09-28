@@ -17,6 +17,8 @@ void	Entity::update()
 
 void Entity::set_model(Model *model)
 {
+	if (model == NULL)
+		exit ;
 	mod = model;
 }
 

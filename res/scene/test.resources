@@ -17,4 +17,10 @@ light_fragment.glsl
 #texture:
 //
 player
-black_mage1.png
+black_mage.png
+//
+warrior
+warrior.png
+//
+wall
+wall.jpg

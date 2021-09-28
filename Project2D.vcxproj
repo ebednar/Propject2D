@@ -535,8 +535,10 @@
     <ClInclude Include="include\glm\vec4.hpp" />
     <ClInclude Include="include\glm\vector_relational.hpp" />
     <ClInclude Include="include\khrplatform.h" />
+    <ClInclude Include="include\light.h" />
     <ClInclude Include="include\material.h" />
     <ClInclude Include="include\model.h" />
+    <ClInclude Include="include\obstacle.h" />
     <ClInclude Include="include\player.h" />
     <ClInclude Include="include\render.h" />
     <ClInclude Include="include\sandbox.h" />
@@ -544,6 +546,7 @@
     <ClInclude Include="include\shader.h" />
     <ClInclude Include="include\skybox.h" />
     <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\tilemap.h" />
     <ClInclude Include="include\ui_text.h" />
     <ClInclude Include="lib\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="lib\GLFW\include\GLFW\glfw3native.h" />
@@ -694,15 +697,18 @@
     <ClCompile Include="src\entity.cpp" />
     <ClCompile Include="src\events.cpp" />
     <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\light.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\material.cpp" />
     <ClCompile Include="src\model.cpp" />
+    <ClCompile Include="src\obstacle.cpp" />
     <ClCompile Include="src\player.cpp" />
     <ClCompile Include="src\render.cpp" />
     <ClCompile Include="src\sandbox.cpp" />
     <ClCompile Include="src\scene.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\skybox.cpp" />
+    <ClCompile Include="src\tilemap.cpp" />
     <ClCompile Include="src\ui_text.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

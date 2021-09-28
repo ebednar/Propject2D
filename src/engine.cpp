@@ -1,8 +1,6 @@
 #include "engine.h"
 #include "glad.h"
 #include <iostream>
-#include "glm/glm.hpp"
-
 
 Engine::~Engine()
 {
@@ -38,9 +36,11 @@ void Engine::init_engine(int width, int height)
 		exit(EXIT_FAILURE);
 	}
 	glfwSetKeyCallback(window, key_callback);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	glfwSetCursorPosCallback(window, mouse_callback);
-	glfwSetWindowUserPointer(window, &controls);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetWindowSizeCallback(window, window_size_callback);
+	glfwSetWindowUserPointer(window, &events);
 	glViewport(0, 0, width, height);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -49,8 +49,8 @@ void Engine::init_engine(int width, int height)
 	this->width = width;
 	this->height = height;
 
-	controls.yaw = cam.yaw;
-	controls.pitch = cam.pitch;
+	events.yaw = cam.yaw;
+	events.pitch = cam.pitch;
 
 	rend.init(static_cast<float>(width), static_cast<float>(height));
 	
@@ -76,22 +76,12 @@ void Engine::run_engine()
 			fps = 0;
 		}
 		old_time = glfwGetTime();
-
-		cam.speed = 8.0f * delta_time;
-		if (controls.keys[GLFW_KEY_UP])
-			cam.pos.y += cam.speed;
-		if (controls.keys[GLFW_KEY_DOWN])
-			cam.pos.y -= cam.speed;
-		if (controls.keys[GLFW_KEY_LEFT])
-			cam.pos.x -= cam.speed;
-		if (controls.keys[GLFW_KEY_RIGHT])
-			cam.pos.x += cam.speed;
-		cam.yaw = controls.yaw;
-		cam.pitch = controls.pitch;
-
-		cam.update_free();
+		
 		scene.update_scene();
-		rend.draw_skybox(&skybox, &cam);
+		events_handling();
+
+		//rend.draw_skybox(&skybox, &cam);
+		rend.draw_tilemap(&scene, &cam);
 		rend.draw_scene(&scene, &cam);
 
 		glfwSwapBuffers(window);
@@ -100,22 +90,6 @@ void Engine::run_engine()
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
 	glfwTerminate();
-}
-
-void Engine::add_entity(Entity *ent_ptr)
-{
-	scene.add_entity(ent_ptr);
-}
-
-void Engine::set_player(Entity *ent)
-{
-	player = ent;
-	rend.player = ent;
-}
-
-void Engine::add_light_source(glm::vec3 l_pos, glm::vec3 color)
-{
-	scene.add_light_source(l_pos, color);
 }
 
 void	 Engine::add_text_ui(std::string str, float x, float y, float scale)
@@ -127,5 +101,39 @@ void	 Engine::add_text_ui(std::string str, float x, float y, float scale)
 void	 Engine::change_text(std::string str, int id)
 {
 	text[id]->str = str;
+}
+
+void	Engine::events_handling()
+{
+	cam.speed = 8.0f * delta_time;
+	if (events.keys[GLFW_KEY_UP])
+		cam.pos.y += cam.speed;
+	if (events.keys[GLFW_KEY_DOWN])
+		cam.pos.y -= cam.speed;
+	if (events.keys[GLFW_KEY_LEFT])
+		cam.pos.x -= cam.speed;
+	if (events.keys[GLFW_KEY_RIGHT])
+		cam.pos.x += cam.speed;
+	if (events.r_clicked)
+	{
+		cam.pos.x -= events.xoffset * 0.5f;
+		events.xoffset = 0;
+		cam.pos.y -= events.yoffset * 0.5f;
+		events.yoffset = 0;
+	}
+
+	// camera rotation
+	//cam.yaw = events.yaw;
+	//cam.pitch = events.pitch;
+	cam.update_free();
+
+	if (events.resize)
+	{
+		width = events.width;
+		height = events.height;
+		rend.recalc_proj(width, height);
+		glViewport(0, 0, width, height);
+		events.resize = false;
+	}
 }
 
