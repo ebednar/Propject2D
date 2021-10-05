@@ -5,6 +5,9 @@
 #include "events.h"
 #include "skybox.h"
 #include "scene.h"
+#include "editorUI.h"
+
+#define EDITOR
 
 class Engine {
 public:
@@ -12,6 +15,7 @@ public:
 	Scene						scene;
 	Events						events;
 	Skybox						skybox;
+	EditorUI					editorUI;
 	std::vector<text_t*>		text;
 	double						delta_time = 0.0;
 	bool						close_eng = false;
@@ -27,6 +31,7 @@ private:
 	ui_text					texter;
 	double					old_time = 0.0;
 	double					timer = 0.0;
+	int						fps_counter = 0;
 	int						fps = 0;
 	int						width = 0;
 	int						height = 0;

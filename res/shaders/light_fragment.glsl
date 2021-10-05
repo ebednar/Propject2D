@@ -2,9 +2,13 @@
 
 out vec4 color;
 
-in vec4 vColor;
+struct Light {
+	vec3 diffuse;
+};
+
+uniform Light light;
 
 void main()
 {
-	color = vColor;
+	color = vec4(light.diffuse, 1.0f);
 }

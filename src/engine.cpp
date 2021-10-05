@@ -56,6 +56,9 @@ void Engine::init_engine(int width, int height)
 	
 	skybox.init();
 	skybox.set_shader("res/shaders/skybox_vert.glsl", "res/shaders/skybox_frag.glsl");
+#ifdef EDITOR
+	editorUI.init(window);
+#endif
 }
 
 void Engine::run_engine()
@@ -68,12 +71,12 @@ void Engine::run_engine()
 
 		delta_time = glfwGetTime() - old_time;
 		timer += delta_time;
-		fps++;
+		fps_counter++;
 		if (timer >= 1.0)
 		{
 			timer -= 1.0;
-			std::cout << "fps - " << fps << std::endl;
-			fps = 0;
+			fps = fps_counter;
+			fps_counter = 0;
 		}
 		old_time = glfwGetTime();
 		
@@ -83,12 +86,17 @@ void Engine::run_engine()
 		//rend.draw_skybox(&skybox, &cam);
 		rend.draw_tilemap(&scene, &cam);
 		rend.draw_scene(&scene, &cam);
+#ifdef EDITOR
+		editorUI.draw(&scene, width, height, fps);
+#endif // EDITOR
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		if(close_eng)
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
+	editorUI.close();
+	glfwDestroyWindow(window);
 	glfwTerminate();
 }
 
@@ -114,12 +122,19 @@ void	Engine::events_handling()
 		cam.pos.x -= cam.speed;
 	if (events.keys[GLFW_KEY_RIGHT])
 		cam.pos.x += cam.speed;
+
 	if (events.r_clicked)
 	{
-		cam.pos.x -= events.xoffset * 0.5f;
+		cam.pos.x -= events.xoffset * 20.0f * delta_time;
 		events.xoffset = 0;
-		cam.pos.y -= events.yoffset * 0.5f;
+		cam.pos.y -= events.yoffset * 20.0f * delta_time;
 		events.yoffset = 0;
+	}
+	
+	if (events.l_clicked)
+	{
+		double xpos, ypos;
+		glfwGetCursorPos(window, &xpos, &ypos);
 	}
 
 	// camera rotation

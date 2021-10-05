@@ -120,7 +120,7 @@ int		Scene::load_map(const char* path)
 
 	std::cout << "load map " << path << std::endl;
 	tilemap.shader_id = shader_atlas["base"];
-	tilemap.texture_id = texture_atlas["wall"];
+	tilemap.texture_id = texture_atlas["tileset"];
 	file.open(path);
 	if (not file.is_open())
 	{
@@ -187,6 +187,7 @@ int		Scene::load_scene(const char* path)
 
 			std::getline(file, line);
 			place_ent(player, line);
+			player->type = entity_type::Player;
 			add_entity(player);
 		}
 		if (line == "#obstacle")
@@ -195,6 +196,7 @@ int		Scene::load_scene(const char* path)
 
 			std::getline(file, line);
 			place_ent(obs, line);
+			obs->type = entity_type::Obstacle;
 			add_entity(obs);
 		}
 		if (line == "#light")
@@ -207,7 +209,8 @@ int		Scene::load_scene(const char* path)
 			std::getline(file, line);
 			read_light_info(light, line);
 			light->scale(0.1f, 0.1f, 0.1f);
-			point_lights.push_back(light);
+			light->type = entity_type::Light;
+			add_point_light(light);
 		}
 	}
 	return 0;
@@ -273,6 +276,12 @@ void	Scene::add_entity(Entity* ent_ptr)
 {
 	ents.push_back(ent_ptr);
 	ents_numb++;
+}
+
+void	Scene::add_point_light(Light* ent_ptr)
+{
+	point_lights.push_back(ent_ptr);
+	lights_numb++;
 }
 
 void	Scene::update_scene()

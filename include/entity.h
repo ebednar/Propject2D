@@ -3,6 +3,13 @@
 #include "glm/glm.hpp"
 #include "material.h"
 
+enum class entity_type
+{
+	Player,
+	Obstacle,
+	Light
+};
+
 class Entity
 {
 public:
@@ -11,6 +18,7 @@ public:
 	glm::vec3	position;
 	glm::vec3	e_scale;
 	glm::vec3	angle;
+	entity_type	type;
 public:
 	Entity();
 	virtual ~Entity() {};

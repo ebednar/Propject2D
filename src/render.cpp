@@ -45,9 +45,9 @@ void Render::draw_scene(Scene* scene, Camera* cam)
 		glUniform3f(glGetUniformLocation(ent->material.shader_id, "lightPos"), scene->point_lights[0]->position.x, scene->point_lights[0]->position.y, scene->point_lights[0]->position.z);
 		glUniform3f(glGetUniformLocation(ent->material.shader_id, "viewPos"), cam->pos.x, cam->pos.y, cam->pos.z);
 		glUniform1i(glGetUniformLocation(ent->material.shader_id, "material.diffuse"), 0);
-		glUniform3f(glGetUniformLocation(ent->material.shader_id, "material.specular"), 0.5f, 0.5f, 0.5f);
+		glUniform3f(glGetUniformLocation(ent->material.shader_id, "material.specular"), 0.2f, 0.2f, 0.2f);
 		glUniform1f(glGetUniformLocation(ent->material.shader_id, "material.shininess"), 16.0f);
-		glUniform3f(glGetUniformLocation(ent->material.shader_id, "light.ambient"), 0.2f, 0.2f, 0.2f);
+		glUniform3f(glGetUniformLocation(ent->material.shader_id, "light.ambient"), 0.3f, 0.3f, 0.3f);
 		glUniform3f(glGetUniformLocation(ent->material.shader_id, "light.diffuse"), light->color[0], light->color[1], light->color[2]);
 		glUniform3f(glGetUniformLocation(ent->material.shader_id, "light.specular"), 0.4f, 0.4f, 0.4f);
 		glUniform1f(glGetUniformLocation(ent->material.shader_id, "light.constant"), light->constant);
@@ -82,7 +82,7 @@ void	Render::draw_tilemap(Scene* scene, Camera* cam)
 	glUniform3f(glGetUniformLocation(tilemap->shader_id, "lightPos"), scene->point_lights[0]->position.x, scene->point_lights[0]->position.y, scene->point_lights[0]->position.z);
 	glUniform3f(glGetUniformLocation(tilemap->shader_id, "viewPos"), cam->pos.x, cam->pos.y, cam->pos.z);
 	glUniform1i(glGetUniformLocation(tilemap->shader_id, "material.diffuse"), 0);
-	glUniform3f(glGetUniformLocation(tilemap->shader_id, "material.specular"), 0.5f, 0.5f, 0.5f);
+	glUniform3f(glGetUniformLocation(tilemap->shader_id, "material.specular"), 0.2f, 0.2f, 0.2f);
 	glUniform1f(glGetUniformLocation(tilemap->shader_id, "material.shininess"), 16.0f);
 	glUniform3f(glGetUniformLocation(tilemap->shader_id, "light.ambient"), 0.2f, 0.2f, 0.2f);
 	glUniform3f(glGetUniformLocation(tilemap->shader_id, "light.diffuse"), light->color[0], light->color[1], light->color[2]);
