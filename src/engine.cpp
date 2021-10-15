@@ -43,9 +43,13 @@ void Engine::init_engine(int width, int height)
 	glfwSetWindowUserPointer(window, &events);
 	glViewport(0, 0, width, height);
 	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendEquation(GL_FUNC_ADD);
+	/*glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);*/
 	this->width = width;
 	this->height = height;
 
@@ -57,7 +61,7 @@ void Engine::init_engine(int width, int height)
 	skybox.init();
 	skybox.set_shader("res/shaders/skybox_vert.glsl", "res/shaders/skybox_frag.glsl");
 #ifdef EDITOR
-	editorUI.init(window);
+	editorUI.init(window, width, height);
 #endif
 }
 
@@ -66,7 +70,7 @@ void Engine::run_engine()
 	old_time = glfwGetTime();
 	while (!glfwWindowShouldClose(window))
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT /*| GL_STENCIL_BUFFER_BIT*/);
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 
 		delta_time = glfwGetTime() - old_time;
@@ -86,8 +90,13 @@ void Engine::run_engine()
 		//rend.draw_skybox(&skybox, &cam);
 		rend.draw_tilemap(&scene, &cam);
 		rend.draw_scene(&scene, &cam);
+
 #ifdef EDITOR
-		editorUI.draw(&scene, width, height, fps);
+		rend.draw_target(&scene, &cam);
+		editorUI.start_frame();
+		editorUI.draw(&scene, fps);
+		editorUI.edit_target(&scene);
+		editorUI.end_frame();
 #endif // EDITOR
 
 		glfwSwapBuffers(window);
@@ -115,14 +124,15 @@ void	Engine::events_handling()
 {
 	cam.speed = 8.0f * delta_time;
 	if (events.keys[GLFW_KEY_UP])
-		cam.pos.y += cam.speed;
+		cam.pos.z += cam.speed;
 	if (events.keys[GLFW_KEY_DOWN])
-		cam.pos.y -= cam.speed;
+		cam.pos.z -= cam.speed;
 	if (events.keys[GLFW_KEY_LEFT])
 		cam.pos.x -= cam.speed;
 	if (events.keys[GLFW_KEY_RIGHT])
 		cam.pos.x += cam.speed;
 
+	// hold right mouse to scroll screen
 	if (events.r_clicked)
 	{
 		cam.pos.x -= events.xoffset * 20.0f * delta_time;
@@ -131,10 +141,10 @@ void	Engine::events_handling()
 		events.yoffset = 0;
 	}
 	
+	// click left mouse to choose entity
 	if (events.l_clicked)
 	{
-		double xpos, ypos;
-		glfwGetCursorPos(window, &xpos, &ypos);
+		editorUI.choose_ent(&scene, &cam, events.last_x, events.last_y);
 	}
 
 	// camera rotation

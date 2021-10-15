@@ -18,6 +18,7 @@ public:
 	glm::vec3	position;
 	glm::vec3	e_scale;
 	glm::vec3	angle;
+	glm::mat4	MVP;
 	entity_type	type;
 public:
 	Entity();

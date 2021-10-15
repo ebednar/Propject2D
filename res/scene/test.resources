@@ -14,6 +14,10 @@ base_frag.glsl
 light
 light_vertex.glsl
 light_fragment.glsl
+//
+target
+light_vertex.glsl
+simple_color_frag.glsl
 #texture:
 //
 player

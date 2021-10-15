@@ -15,6 +15,7 @@ public:
 	std::map<std::string, unsigned int>	texture_atlas;
 	std::vector<Entity*>				ents;
 	std::vector<Light*>					point_lights;
+	Entity*								target = nullptr;
 	unsigned int						ents_numb = 0;
 	unsigned int						lights_numb = 0;
 public:

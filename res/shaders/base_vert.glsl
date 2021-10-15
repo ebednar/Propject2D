@@ -11,6 +11,7 @@ out vec3 vFragPos;
 uniform mat4 u_M;
 uniform mat4 u_V;
 uniform mat4 u_P;
+uniform mat4 u_MVP;
 
 void main()
 {
@@ -19,4 +20,5 @@ void main()
     vNormal = mat3(transpose(inverse(u_M))) * normCoord;
 
     gl_Position = u_P * u_V * u_M * vec4(position, 1.0f);
+   /* gl_Position = u_MVP * vec4(position, 1.0f);*/
 }

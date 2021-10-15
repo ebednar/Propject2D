@@ -213,6 +213,7 @@ int		Scene::load_scene(const char* path)
 			add_point_light(light);
 		}
 	}
+	target = ents[0];
 	return 0;
 }
 
