@@ -13,6 +13,8 @@ struct Events
 	bool	keys[1024];
 	bool	first_m = true;
 	bool	l_clicked = false;
+	bool	l_released = false;
+	bool	l_hold = false;
 	bool	r_clicked = false;
 	bool	resize = false;
 };

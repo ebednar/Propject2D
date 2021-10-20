@@ -123,6 +123,7 @@ void	 Engine::change_text(std::string str, int id)
 void	Engine::events_handling()
 {
 	cam.speed = 8.0f * delta_time;
+	mouse_speed = 15.0f * delta_time;
 	if (events.keys[GLFW_KEY_UP])
 		cam.pos.z += cam.speed;
 	if (events.keys[GLFW_KEY_DOWN])
@@ -135,16 +136,34 @@ void	Engine::events_handling()
 	// hold right mouse to scroll screen
 	if (events.r_clicked)
 	{
-		cam.pos.x -= events.xoffset * 20.0f * delta_time;
+		cam.pos.x -= events.xoffset * mouse_speed;
 		events.xoffset = 0;
-		cam.pos.y -= events.yoffset * 20.0f * delta_time;
+		cam.pos.y -= events.yoffset * mouse_speed;
 		events.yoffset = 0;
 	}
 	
 	// click left mouse to choose entity
+	bool targeted = false;
 	if (events.l_clicked)
 	{
-		editorUI.choose_ent(&scene, &cam, events.last_x, events.last_y);
+		targeted = editorUI.choose_ent(&scene, &cam, events.last_x, events.last_y);
+		events.l_hold = true;
+		events.l_clicked = false;
+	}
+
+	// hold left mouse to move entity
+	if (events.l_hold)
+	{
+		scene.target->move(events.xoffset * mouse_speed, events.yoffset * mouse_speed, 0.0f);
+		events.xoffset = 0;
+		events.yoffset = 0;
+	}
+
+	// release left mouse
+	if (events.l_released)
+	{
+		events.l_released = false;
+		events.l_hold = false;
 	}
 
 	// camera rotation

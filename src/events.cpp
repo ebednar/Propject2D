@@ -61,7 +61,10 @@ void	mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
 		events->l_clicked = true;
 	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE)
+	{
 		events->l_clicked = false;
+		events->l_released = true;
+	}
 }
 
 void window_size_callback(GLFWwindow* window, int width, int height)

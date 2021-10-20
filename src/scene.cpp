@@ -276,6 +276,7 @@ void	Scene::read_light_info(Light* ent, std::string line)
 void	Scene::add_entity(Entity* ent_ptr)
 {
 	ents.push_back(ent_ptr);
+	ent_ptr->number = ents_numb;
 	ents_numb++;
 }
 

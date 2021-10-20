@@ -31,6 +31,7 @@ private:
 	ui_text					texter;
 	double					old_time = 0.0;
 	double					timer = 0.0;
+	float					mouse_speed = 0.0f;
 	int						fps_counter = 0;
 	int						fps = 0;
 	int						width = 0;

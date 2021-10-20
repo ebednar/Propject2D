@@ -20,6 +20,7 @@ public:
 	glm::vec3	angle;
 	glm::mat4	MVP;
 	entity_type	type;
+	int			number;
 public:
 	Entity();
 	virtual ~Entity() {};

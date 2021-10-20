@@ -42,14 +42,8 @@ void	EditorUI::end_frame()
 
 void	EditorUI::draw(Scene* scene, int fps)
 {
-	ImGui::Begin("Light debug");
+	ImGui::Begin("Test debug");
 	ImGui::Text("fps: %d", fps);
-	ImGui::SliderFloat("red", &scene->point_lights[0]->color[0], 0.0f, 1.0f);
-	ImGui::SliderFloat("green", &scene->point_lights[0]->color[1], 0.0f, 1.0f);
-	ImGui::SliderFloat("blue", &scene->point_lights[0]->color[2], 0.0f, 1.0f);
-	ImGui::SliderFloat("constant", &scene->point_lights[0]->constant, 0.1f, 1.5f);
-	ImGui::SliderFloat("linear", &scene->point_lights[0]->linear, 0.01f, 0.5f);
-	ImGui::SliderFloat("quadratic", &scene->point_lights[0]->quadratic, 0.001f, 0.05f);
 	ImGui::End();
 }
 
@@ -122,7 +116,7 @@ void	EditorUI::raycast_experimental(Scene* scene, Camera* cam, float x, float y)
 	int c = check;
 }
 
-void	EditorUI::choose_ent(Scene* scene, Camera* cam, float x, float y)
+bool	EditorUI::choose_ent(Scene* scene, Camera* cam, float x, float y)
 {
 	int i = 0;
 	for (i = 0; i < scene->ents_numb; ++i)
@@ -147,24 +141,57 @@ void	EditorUI::choose_ent(Scene* scene, Camera* cam, float x, float y)
 		aabb = projection * cam->view * aabb;
 		aabb /= aabb.w;
 
-		int check = 0;
+		bool check = false;
 		if (aabb.x >= nx && aabb.x - 2 * (aabb.x - ent_screen.x) <= nx && aabb.y >= ny && aabb.y - 2 * (aabb.y - ent_screen.y) <= ny)
-			check = 1;
+			check = true;
 		else
-			check = 0;
+			check = false;
 		if (check)
 		{
 			scene->target = ent;
-			break;
+			return true;
 		}
 	}
+	return false;
 }
 
 void	EditorUI::edit_target(Scene* scene)
 {
 	Entity* ent = scene->target;
+	auto type = (int)ent->type;
+
 	ImGui::Begin("Target editor");
-	ImGui::Text("current entity type %s", ent_types[(int)ent->type].c_str());
+	ImGui::Text("current entity type %s", ent_types[type].c_str());
+	ImGui::Text("entity ID %d", ent->number);
+
+	char bufx[64] = "";
+	char bufy[64] = "";
+
+	snprintf(bufx, 64, "%f", ent->position.x);
+	snprintf(bufy, 64, "%f", ent->position.y);
+	ImGui::Text("Position");
+	ImGui::InputText("x", bufx, 10);
+	ImGui::InputText("y", bufy, 10);
+	ent->position.x = atof(bufx);
+	ent->position.y = atof(bufy);
+
+	if (ent_types[type] == "Player")
+	{
+
+	}
+	else if (ent_types[type] == "Obstacle")
+	{
+
+	}
+	else if (ent_types[type] == "Light")
+	{
+		ImGui::SliderFloat("red", &scene->point_lights[0]->color[0], 0.0f, 1.0f);
+		ImGui::SliderFloat("green", &scene->point_lights[0]->color[1], 0.0f, 1.0f);
+		ImGui::SliderFloat("blue", &scene->point_lights[0]->color[2], 0.0f, 1.0f);
+		ImGui::SliderFloat("constant", &scene->point_lights[0]->constant, 0.1f, 1.5f);
+		ImGui::SliderFloat("linear", &scene->point_lights[0]->linear, 0.01f, 0.5f);
+		ImGui::SliderFloat("quadratic", &scene->point_lights[0]->quadratic, 0.001f, 0.05f);
+	}
 	ImGui::End();
 }
 
