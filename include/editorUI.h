@@ -7,9 +7,11 @@ struct GLFWwindow;
 class EditorUI
 {
 private:
+	std::map<int, std::string>	ent_types;
+	glm::mat4 projection;
+	GLFWwindow* window;
 	int	width;
 	int	height;
-	std::map<int, std::string>	ent_types;
 public:
 	void	init(GLFWwindow* window, int width, int height);
 	void	start_frame();
@@ -18,5 +20,6 @@ public:
 	bool	choose_ent(Scene* scene, Camera* cam, float x, float y);
 	void	raycast_experimental(Scene* scene, Camera* cam, float x, float y);
 	void	edit_target(Scene* scene);
+	void	recalc_proj(int width, int height);
 	void	close();
 };

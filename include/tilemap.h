@@ -11,12 +11,12 @@ struct Tile
 class Tilemap
 {
 public:
-	Model*			mod = new Model();
+	Model			mod;
 	float*			vertices;
 	unsigned int	map_numb = 0;
-	int				shader_id;
-	unsigned int	texture_id;
-	Tile*			tiles;
+	int				shader_id = 0;
+	unsigned int	texture_id = 0;
+	Tile*			tiles = nullptr;
 public:
 	void	generate_batched_map(Model* mod);
 };

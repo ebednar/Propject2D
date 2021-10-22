@@ -154,6 +154,7 @@ int Model::load_obj(const char* path, bool loadBuf)
 	}
 	if (loadBuf)
 		vertex_buffer();
+
 	return 0;
 }
 

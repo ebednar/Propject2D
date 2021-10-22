@@ -1,3 +1,5 @@
+#map
+test.map
 #player
 sprite base player 0.0 0.0 0.0
 #obstacle

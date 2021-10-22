@@ -567,6 +567,7 @@
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\tilemap.h" />
     <ClInclude Include="include\ui_text.h" />
+    <ClInclude Include="include\win_dialog.h" />
     <ClInclude Include="lib\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="lib\GLFW\include\GLFW\glfw3native.h" />
   </ItemGroup>
@@ -736,6 +737,7 @@
     <ClCompile Include="src\skybox.cpp" />
     <ClCompile Include="src\tilemap.cpp" />
     <ClCompile Include="src\ui_text.cpp" />
+    <ClCompile Include="src\win_dialog.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

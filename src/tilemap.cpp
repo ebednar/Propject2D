@@ -20,7 +20,9 @@ void	Tilemap::generate_batched_map(Model* sprite_mod)
 			vertices[i * 48 + j * 8 + 7] = sprite_mod->vertices[j * 8 + 7]; // normal.z
 		}
 	}
-	mod->vertices = vertices;
-	mod->ind_number = sprite_mod->ind_number * map_numb;
-	mod->vertex_buffer();
+	mod.vertices = vertices;
+	mod.ind_number = sprite_mod->ind_number * map_numb;
+	mod.vertex_buffer();
+	delete[] vertices;
+	vertices = nullptr;
 }

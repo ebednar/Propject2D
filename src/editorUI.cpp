@@ -4,16 +4,16 @@
 #include "imgui_impl_opengl3.h"
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-
-glm::mat4 projection;
+#include "win_dialog.h"
 
 void	EditorUI::init(GLFWwindow* window, int width, int height)
 {
+	this->window = window;
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
-	ImGui_ImplOpenGL3_Init();
+	ImGui_ImplOpenGL3_Init("#version 410");
 
 	projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 100.0f);
 	this->width = width;
@@ -32,6 +32,7 @@ void	EditorUI::start_frame()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
 }
 
 void	EditorUI::end_frame()
@@ -42,9 +43,47 @@ void	EditorUI::end_frame()
 
 void	EditorUI::draw(Scene* scene, int fps)
 {
-	ImGui::Begin("Test debug");
-	ImGui::Text("fps: %d", fps);
-	ImGui::End();
+	bool close = false;
+
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			if (ImGui::MenuItem("Open...", "Ctrl+O"))
+			{
+				std::string filepath = open_file(window, "Scene file (*.scene)\0*.scene\0");
+				if (!filepath.empty())
+				{
+					scene->close_scene();
+					scene->load_scene(filepath.c_str());
+				}
+			}
+			if (ImGui::MenuItem("Save as...", "Ctrl+Shift+S"))
+			{
+				std::string filepath = save_file(window, "Scene file (*.scene)\0*.scene\0");
+				if (!filepath.empty())
+				{
+					scene->save_scene(filepath.c_str());
+				}
+			}
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+	}
+
+	ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
+	if (ImGui::Begin("Test debug", &close))
+	{
+		ImGui::Text("fps: %d", fps);
+		ImGui::Text("entities number: %d", scene->ents_numb);
+		ImGui::Text("point lights number: %d", scene->lights_numb);
+		if (ImGui::Button("Create entity"))
+		{
+			/*Entity* ent = new Entity();
+			scene->add_entity();*/
+		}
+		ImGui::End();
+	}
 }
 
 void	EditorUI::raycast_experimental(Scene* scene, Camera* cam, float x, float y)
@@ -118,6 +157,9 @@ void	EditorUI::raycast_experimental(Scene* scene, Camera* cam, float x, float y)
 
 bool	EditorUI::choose_ent(Scene* scene, Camera* cam, float x, float y)
 {
+	float nx = (x / (float)width) * 2.0f - 1.0f;
+	float ny = -((y / (float)height) * 2.0f - 1.0f);
+
 	int i = 0;
 	for (i = 0; i < scene->ents_numb; ++i)
 	{
@@ -134,19 +176,12 @@ bool	EditorUI::choose_ent(Scene* scene, Camera* cam, float x, float y)
 		glm::vec4 ent_screen = MVP * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		ent_screen /= ent_screen.w;
 
-		float nx = (x / (float)width) * 2.0f - 1.0f;
-		float ny = -((y / (float)height) * 2.0f - 1.0f);
-
 		glm::vec4 aabb = glm::vec4(ent->position.x + 0.5f, ent->position.y + 0.5f, 0.0f, 1.0f);
 		aabb = projection * cam->view * aabb;
 		aabb /= aabb.w;
 
 		bool check = false;
 		if (aabb.x >= nx && aabb.x - 2 * (aabb.x - ent_screen.x) <= nx && aabb.y >= ny && aabb.y - 2 * (aabb.y - ent_screen.y) <= ny)
-			check = true;
-		else
-			check = false;
-		if (check)
 		{
 			scene->target = ent;
 			return true;
@@ -157,12 +192,14 @@ bool	EditorUI::choose_ent(Scene* scene, Camera* cam, float x, float y)
 
 void	EditorUI::edit_target(Scene* scene)
 {
+	if (!scene->target)
+		return ;
 	Entity* ent = scene->target;
 	auto type = (int)ent->type;
 
 	ImGui::Begin("Target editor");
 	ImGui::Text("current entity type %s", ent_types[type].c_str());
-	ImGui::Text("entity ID %d", ent->number);
+	ImGui::Text("entity ID %d", ent->id);
 
 	char bufx[64] = "";
 	char bufy[64] = "";
@@ -193,6 +230,13 @@ void	EditorUI::edit_target(Scene* scene)
 		ImGui::SliderFloat("quadratic", &scene->point_lights[0]->quadratic, 0.001f, 0.05f);
 	}
 	ImGui::End();
+}
+
+void	EditorUI::recalc_proj(int width, int height)
+{
+	projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 100.0f);
+	this->width = width;
+	this->height = height;
 }
 
 void	EditorUI::close()

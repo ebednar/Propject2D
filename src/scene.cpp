@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "scene.h"
 #include "shader.h"
 #include "glad.h"
@@ -111,6 +112,7 @@ int		Scene::load_resources(const char* path)
 			}
 		}
 	}
+	file.close();
 	return 0;
 }
 
@@ -172,6 +174,7 @@ int		Scene::load_scene(const char* path)
 	std::ifstream	file;
 
 	std::cout << "load scene " << path << std::endl;
+	load_resources("res/scene/test.resources");
 	file.open(path);
 	if (not file.is_open())
 	{
@@ -181,31 +184,36 @@ int		Scene::load_scene(const char* path)
 	std::string line;
 	while (std::getline(file, line))
 	{
+		if (line == "#map")
+		{
+			std::getline(file, line);
+			name = line;
+		}
 		if (line == "#player")
 		{
 			Player* player = new Player();
 
 			std::getline(file, line);
+			add_entity(player);
 			place_ent(player, line);
 			player->type = entity_type::Player;
-			add_entity(player);
 		}
 		if (line == "#obstacle")
 		{
 			Obstacle* obs = new Obstacle();
 
 			std::getline(file, line);
+			add_entity(obs);
 			place_ent(obs, line);
 			obs->type = entity_type::Obstacle;
-			add_entity(obs);
 		}
 		if (line == "#light")
 		{
 			Light* light = new Light();
 
 			std::getline(file, line);
-			place_ent(light, line);
 			add_entity(light);
+			place_ent(light, line);
 			std::getline(file, line);
 			read_light_info(light, line);
 			light->scale(0.1f, 0.1f, 0.1f);
@@ -213,7 +221,12 @@ int		Scene::load_scene(const char* path)
 			add_point_light(light);
 		}
 	}
-	target = ents[0];
+	file.close();
+	std::string map_path("res/scene/");
+	map_path += name;
+	load_map(map_path.c_str());
+	target = nullptr;
+	is_loaded = true;
 	return 0;
 }
 
@@ -276,7 +289,7 @@ void	Scene::read_light_info(Light* ent, std::string line)
 void	Scene::add_entity(Entity* ent_ptr)
 {
 	ents.push_back(ent_ptr);
-	ent_ptr->number = ents_numb;
+	ent_ptr->id = ents_numb;
 	ents_numb++;
 }
 
@@ -286,10 +299,75 @@ void	Scene::add_point_light(Light* ent_ptr)
 	lights_numb++;
 }
 
+int		Scene::save_scene(const char* path)
+{
+	std::stringstream out;
+	std::cout << "saving scene " << path << std::endl;
+
+	out << "#map\n" << name << '\n';
+	for (Entity* ent : ents)
+	{
+		if (ent->type == entity_type::Player)
+		{
+			out << "#player\n";
+			out << "sprite base player " << ent->position.x << ' ' << ent->position.y << ' ' << ent->position.z << '\n';
+		}
+		else if (ent->type == entity_type::Obstacle)
+		{
+			out << "#obstacle\n";
+			out << "sprite base player " << ent->position.x << ' ' << ent->position.y << ' ' << ent->position.z << '\n';
+		}
+		else if (ent->type == entity_type::Light)
+		{
+			out << "#light\n";
+			out << "cube light player " << ent->position.x << ' ' << ent->position.y << ' ' << ent->position.z << '\n';
+			
+			for (Light* light : point_lights)
+				if (ent->id == light->id)
+				{
+					out << light->color[0] << ' ' << light->color[1] << ' ' << light->color[2] << ' ' << light->constant << ' ' << light->linear << ' ' << light->quadratic << '\n';
+					break;
+				}
+		}
+	}
+
+	std::ofstream	file(path);
+	file << out.str();
+	file.close();
+	return 0;
+};
+
 void	Scene::update_scene()
 {
 	for (Entity* ent : ents)
 	{
 		ent->update();
 	}
+}
+
+void	Scene::close_scene()
+{
+	target = nullptr;
+	delete[] tilemap.tiles;
+	tilemap.tiles = nullptr;
+	tilemap.map_numb = 0;
+	tilemap.shader_id = 0;
+	tilemap.texture_id = 0;
+	for (auto mod : model_atlas)
+	{
+		delete mod.second->vertices;
+		delete mod.second;
+	}
+	model_atlas.clear();
+	texture_atlas.clear();
+	for (auto ent : ents)
+		delete ent;
+	ents.clear();
+	for (auto light : point_lights)
+		light = nullptr;
+	point_lights.clear();
+	name = "";
+	ents_numb = 0;
+	lights_numb = 0;
+	is_loaded = false;
 }

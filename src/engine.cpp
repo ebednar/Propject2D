@@ -4,26 +4,18 @@
 
 Engine::~Engine()
 {
-	int length = scene.model_atlas.size();
-	for (auto mod : scene.model_atlas)
-	{
-		delete mod.second->vertices;
-		delete mod.second;
-	}
-	length = scene.ents.size();
-	for (auto ent : scene.ents)
-		delete ent;
+	scene.close_scene();
 	std::cout << "Engine off" << std::endl;
 }
 
-void Engine::init_engine(int width, int height)
+void Engine::init_engine(const char* name, int width, int height)
 {
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	window = glfwCreateWindow(width, height, "42 run", NULL, NULL);
+	window = glfwCreateWindow(width, height, name, NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -58,8 +50,8 @@ void Engine::init_engine(int width, int height)
 
 	rend.init(static_cast<float>(width), static_cast<float>(height));
 	
-	skybox.init();
-	skybox.set_shader("res/shaders/skybox_vert.glsl", "res/shaders/skybox_frag.glsl");
+	/*skybox.init();
+	skybox.set_shader("res/shaders/skybox_vert.glsl", "res/shaders/skybox_frag.glsl");*/
 #ifdef EDITOR
 	editorUI.init(window, width, height);
 #endif
@@ -84,21 +76,23 @@ void Engine::run_engine()
 		}
 		old_time = glfwGetTime();
 		
-		scene.update_scene();
-		events_handling();
-
 		//rend.draw_skybox(&skybox, &cam);
-		rend.draw_tilemap(&scene, &cam);
-		rend.draw_scene(&scene, &cam);
-
-#ifdef EDITOR
-		rend.draw_target(&scene, &cam);
+		if (scene.is_loaded)
+		{
+			scene.update_scene();
+			rend.draw_tilemap(&scene, &cam);
+			rend.draw_scene(&scene, &cam);
+		}
+	#ifdef EDITOR
+		if (scene.target)
+			rend.draw_target(&scene, &cam);
 		editorUI.start_frame();
-		editorUI.draw(&scene, fps);
 		editorUI.edit_target(&scene);
+		editorUI.draw(&scene, fps);
 		editorUI.end_frame();
-#endif // EDITOR
+	#endif // EDITOR
 
+		events_handling();
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		if(close_eng)
@@ -124,6 +118,9 @@ void	Engine::events_handling()
 {
 	cam.speed = 8.0f * delta_time;
 	mouse_speed = 15.0f * delta_time;
+
+#ifdef EDITOR
+
 	if (events.keys[GLFW_KEY_UP])
 		cam.pos.z += cam.speed;
 	if (events.keys[GLFW_KEY_DOWN])
@@ -137,13 +134,11 @@ void	Engine::events_handling()
 	if (events.r_clicked)
 	{
 		cam.pos.x -= events.xoffset * mouse_speed;
-		events.xoffset = 0;
 		cam.pos.y -= events.yoffset * mouse_speed;
-		events.yoffset = 0;
 	}
 	
 	// click left mouse to choose entity
-	bool targeted = false;
+	static bool targeted = false;
 	if (events.l_clicked)
 	{
 		targeted = editorUI.choose_ent(&scene, &cam, events.last_x, events.last_y);
@@ -152,19 +147,20 @@ void	Engine::events_handling()
 	}
 
 	// hold left mouse to move entity
-	if (events.l_hold)
+	if (events.l_hold && targeted)
 	{
 		scene.target->move(events.xoffset * mouse_speed, events.yoffset * mouse_speed, 0.0f);
-		events.xoffset = 0;
-		events.yoffset = 0;
 	}
 
 	// release left mouse
 	if (events.l_released)
 	{
+		targeted = false;
 		events.l_released = false;
 		events.l_hold = false;
 	}
+
+#endif // EDITOR
 
 	// camera rotation
 	//cam.yaw = events.yaw;
@@ -176,8 +172,12 @@ void	Engine::events_handling()
 		width = events.width;
 		height = events.height;
 		rend.recalc_proj(width, height);
+		editorUI.recalc_proj(width, height);
 		glViewport(0, 0, width, height);
 		events.resize = false;
 	}
+
+	events.xoffset = 0;
+	events.yoffset = 0;
 }
 

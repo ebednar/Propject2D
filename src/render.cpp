@@ -70,6 +70,8 @@ void Render::draw_scene(Scene* scene, Camera* cam)
 
 void Render::draw_target(Scene* scene, Camera* cam)
 {
+	if (!scene->target)
+		return ;
 	Entity* ent = scene->target;
 	Model* mod = ent->mod;
 	Light* light = scene->point_lights[0];
@@ -132,7 +134,7 @@ void	Render::draw_tilemap(Scene* scene, Camera* cam)
 {
 	Tilemap* tilemap = &scene->tilemap;
 	Light* light = scene->point_lights[0];
-	Model* mod = tilemap->mod;
+	Model* mod = &tilemap->mod;
 
 	glDepthMask(GL_FALSE);
 	glUseProgram(tilemap->shader_id);
