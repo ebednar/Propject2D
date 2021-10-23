@@ -5,8 +5,8 @@
 
 void	Tilemap::generate_batched_map(Model* sprite_mod)
 {
-	vertices = new float[sprite_mod->ind_number * 8 * map_numb];
-	for (int i = 0; i < map_numb; ++i)
+	vertices = new float[sprite_mod->ind_number * 8 * tile_numb];
+	for (int i = 0; i < tile_numb; ++i)
 	{
 		for (int j = 0; j < sprite_mod->ind_number; ++j)
 		{
@@ -21,7 +21,7 @@ void	Tilemap::generate_batched_map(Model* sprite_mod)
 		}
 	}
 	mod.vertices = vertices;
-	mod.ind_number = sprite_mod->ind_number * map_numb;
+	mod.ind_number = sprite_mod->ind_number * tile_numb;
 	mod.vertex_buffer();
 	delete[] vertices;
 	vertices = nullptr;

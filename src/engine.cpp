@@ -81,7 +81,8 @@ void Engine::run_engine()
 		{
 			scene.update_scene();
 			rend.draw_tilemap(&scene, &cam);
-			rend.draw_scene(&scene, &cam);
+			if (!editorUI.is_edit_tilemap)
+				rend.draw_scene(&scene, &cam);
 		}
 	#ifdef EDITOR
 		if (scene.target)
@@ -89,6 +90,8 @@ void Engine::run_engine()
 		editorUI.start_frame();
 		editorUI.edit_target(&scene);
 		editorUI.draw(&scene, fps);
+		if (editorUI.is_edit_tilemap)
+			editorUI.edit_tilemap(&scene);
 		editorUI.end_frame();
 	#endif // EDITOR
 
@@ -139,7 +142,7 @@ void	Engine::events_handling()
 	
 	// click left mouse to choose entity
 	static bool targeted = false;
-	if (events.l_clicked)
+	if (events.l_clicked && !editorUI.is_edit_tilemap)
 	{
 		targeted = editorUI.choose_ent(&scene, &cam, events.last_x, events.last_y);
 		events.l_hold = true;

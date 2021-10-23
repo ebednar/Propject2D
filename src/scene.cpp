@@ -132,13 +132,11 @@ int		Scene::load_map(const char* path)
 	std::string line;
 	int x = 0;
 	int y = 0;
-	int raw_length;
-	int column_length;
 	std::getline(file, line);
-	raw_length = std::stoi(line);
+	tilemap.raws = std::stoi(line);
 	std::getline(file, line);
-	column_length = std::stoi(line);
-	tilemap.tiles = new Tile[raw_length * column_length];
+	tilemap.columns = std::stoi(line);
+	tilemap.tiles = new Tile[tilemap.raws * tilemap.columns];
 	while (std::getline(file, line))
 	{
 		std::string str = "";
@@ -146,22 +144,22 @@ int		Scene::load_map(const char* path)
 		{
 			if (i == ' ')
 			{
-				tilemap.tiles[y * raw_length + x].id = std::stoi(str);
-				tilemap.tiles[y * raw_length + x].x = x;
-				tilemap.tiles[y * raw_length + x].y = y;
+				tilemap.tiles[y * tilemap.raws + x].id = std::stoi(str);
+				tilemap.tiles[y * tilemap.raws + x].x = x;
+				tilemap.tiles[y * tilemap.raws + x].y = y;
 				str = "";
 				x++;
-				tilemap.map_numb++;
+				tilemap.tile_numb++;
 			}
 			str += i;
 		}
-		tilemap.tiles[y * raw_length + x].id = std::stoi(str);
-		tilemap.tiles[y * raw_length + x].x = x;
-		tilemap.tiles[y * raw_length + x].y = y;
+		tilemap.tiles[y * tilemap.raws + x].id = std::stoi(str);
+		tilemap.tiles[y * tilemap.raws + x].x = x;
+		tilemap.tiles[y * tilemap.raws + x].y = y;
 		str = "";
 		x = 0;
 		y++;
-		tilemap.map_numb++;
+		tilemap.tile_numb++;
 	}
 	file.close();
 	Model* mod = model_atlas["sprite"];
@@ -293,6 +291,29 @@ void	Scene::add_entity(Entity* ent_ptr)
 	ents_numb++;
 }
 
+void	Scene::create_entity(entity_type type)
+{
+	if (type == entity_type::Obstacle)
+	{
+		Obstacle* obs = new Obstacle();
+		add_entity(obs);
+		obs->set_model(model_atlas["sprite"]);
+		obs->material.set_shader(shader_atlas["base"]);
+		obs->material.set_texture(texture_atlas["player"]);
+		obs->type = entity_type::Obstacle;
+	}
+	else if (type == entity_type::Light)
+	{
+		Light* light = new Light();
+		add_entity(light);
+		light->set_model(model_atlas["sprite"]);
+		light->material.set_shader(shader_atlas["light"]);
+		light->material.set_texture(texture_atlas["player"]);
+		light->scale(0.1f, 0.1f, 0.1f);
+		light->type = entity_type::Light;
+		add_point_light(light);
+	}
+}
 void	Scene::add_point_light(Light* ent_ptr)
 {
 	point_lights.push_back(ent_ptr);
@@ -350,7 +371,7 @@ void	Scene::close_scene()
 	target = nullptr;
 	delete[] tilemap.tiles;
 	tilemap.tiles = nullptr;
-	tilemap.map_numb = 0;
+	tilemap.tile_numb = 0;
 	tilemap.shader_id = 0;
 	tilemap.texture_id = 0;
 	for (auto mod : model_atlas)

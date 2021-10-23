@@ -54,8 +54,17 @@ void	EditorUI::draw(Scene* scene, int fps)
 				std::string filepath = open_file(window, "Scene file (*.scene)\0*.scene\0");
 				if (!filepath.empty())
 				{
+					scene_path = filepath;
+					save_enable = true;
 					scene->close_scene();
 					scene->load_scene(filepath.c_str());
+				}
+			}
+			if (ImGui::MenuItem("Save", "Ctrl+S", false, save_enable))
+			{
+				if (!scene_path.empty())
+				{
+					scene->save_scene(scene_path.c_str());
 				}
 			}
 			if (ImGui::MenuItem("Save as...", "Ctrl+Shift+S"))
@@ -63,6 +72,8 @@ void	EditorUI::draw(Scene* scene, int fps)
 				std::string filepath = save_file(window, "Scene file (*.scene)\0*.scene\0");
 				if (!filepath.empty())
 				{
+					scene_path = filepath;
+					save_enable = true;
 					scene->save_scene(filepath.c_str());
 				}
 			}
@@ -77,13 +88,149 @@ void	EditorUI::draw(Scene* scene, int fps)
 		ImGui::Text("fps: %d", fps);
 		ImGui::Text("entities number: %d", scene->ents_numb);
 		ImGui::Text("point lights number: %d", scene->lights_numb);
-		if (ImGui::Button("Create entity"))
+		if (ImGui::Button("Edit tilemap"))
 		{
-			/*Entity* ent = new Entity();
-			scene->add_entity();*/
+			is_edit_tilemap = true;
+			scene->target = nullptr;
+		}
+		if (ImGui::CollapsingHeader("Create entity"))
+		{
+			if (ImGui::Button("Create point light"))
+			{
+				scene->create_entity(entity_type::Light);
+			}
+			if (ImGui::Button("Create obstacle"))
+			{
+				scene->create_entity(entity_type::Obstacle);
+			}
 		}
 		ImGui::End();
 	}
+}
+
+bool	EditorUI::choose_ent(Scene* scene, Camera* cam, float x, float y)
+{
+	float nx = (x / (float)width) * 2.0f - 1.0f;
+	float ny = -((y / (float)height) * 2.0f - 1.0f);
+
+	int i = 0;
+	for (i = 0; i < scene->ents_numb; ++i)
+	{
+		Entity* ent = scene->ents[i];
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, ent->position);
+		model = glm::rotate(model, glm::radians(ent->angle[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(ent->angle[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(ent->angle[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+		model = glm::scale(model, ent->e_scale);
+
+		glm::mat4 MVP = projection * cam->view * model;
+
+		glm::vec4 ent_screen = MVP * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		ent_screen /= ent_screen.w;
+
+		glm::vec4 aabb = glm::vec4(ent->position.x + 0.5f, ent->position.y + 0.5f, 0.0f, 1.0f);
+		aabb = projection * cam->view * aabb;
+		aabb /= aabb.w;
+
+		bool check = false;
+		if (aabb.x >= nx && aabb.x - 2 * (aabb.x - ent_screen.x) <= nx && aabb.y >= ny && aabb.y - 2 * (aabb.y - ent_screen.y) <= ny)
+		{
+			scene->target = ent;
+			return true;
+		}
+	}
+	return false;
+}
+
+void	EditorUI::edit_target(Scene* scene)
+{
+	if (!scene->target)
+		return ;
+	Entity* ent = scene->target;
+	auto type = (int)ent->type;
+
+	ImGui::Begin("Target editor");
+	ImGui::Text("current entity type %s", ent_types[type].c_str());
+	ImGui::Text("entity ID %d", ent->id);
+
+	char bufx[64] = "";
+	char bufy[64] = "";
+
+	ImGui::Text("Position");
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.1f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.1f, 1.0f });
+	if (ImGui::Button("X"))
+		ent->position.x = 0.0f;
+	ImGui::PopStyleColor(3);
+	ImGui::SameLine(25.0f);
+	ImGui::PushItemWidth(50.0f);
+	ImGui::DragFloat("##X", &ent->position.x, 0.1f);
+
+	ImGui::SameLine(90.0f);
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.8f, 0.1f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.9f, 0.2f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.8f, 0.1f, 1.0f });
+	if (ImGui::Button("Y"))
+		ent->position.y = 0.0f;
+	ImGui::PopStyleColor(3);
+	ImGui::SameLine(107.0f);
+	ImGui::DragFloat("##Y", &ent->position.y, 0.1f);
+
+	if (ent->type == entity_type::Player)
+	{
+
+	}
+	else if (ent->type == entity_type::Obstacle)
+	{
+
+	}
+	else if (ent->type == entity_type::Light)
+	{
+		for (Light* light : scene->point_lights)
+		{
+			if (light->id == ent->id)
+			{
+				ImGui::SliderFloat("red", &light->color[0], 0.0f, 1.0f);
+				ImGui::SliderFloat("green", &light->color[1], 0.0f, 1.0f);
+				ImGui::SliderFloat("blue", &light->color[2], 0.0f, 1.0f);
+				ImGui::SliderFloat("constant", &light->constant, 0.1f, 1.5f);
+				ImGui::SliderFloat("linear", &light->linear, 0.01f, 0.5f);
+				ImGui::SliderFloat("quadratic", &light->quadratic, 0.001f, 0.05f);
+			}
+		}
+	}
+	ImGui::End();
+}
+
+void	EditorUI::edit_tilemap(Scene* scene)
+{
+	ImGui::Begin("Tilemap editor");
+	//if (ImGui::BeginTable("Tilemap", scene->tilemap.columns))
+	{
+		//for (int i = 0; i < scene->tilemap.tile_numb; ++i)
+		{
+			ImGui::TableNextColumn(); ImGui::InputInt("##Tile", &scene->tilemap.tiles[0].id, 1);
+			ImGui::TableNextColumn(); ImGui::InputInt("##Tile", &scene->tilemap.tiles[1].id, 1);
+		}
+		//ImGui::EndTable();
+	}
+	ImGui::End();
+}
+
+void	EditorUI::recalc_proj(int width, int height)
+{
+	projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 100.0f);
+	this->width = width;
+	this->height = height;
+}
+
+void	EditorUI::close()
+{
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 }
 
 void	EditorUI::raycast_experimental(Scene* scene, Camera* cam, float x, float y)
@@ -153,95 +300,4 @@ void	EditorUI::raycast_experimental(Scene* scene, Camera* cam, float x, float y)
 	}
 
 	int c = check;
-}
-
-bool	EditorUI::choose_ent(Scene* scene, Camera* cam, float x, float y)
-{
-	float nx = (x / (float)width) * 2.0f - 1.0f;
-	float ny = -((y / (float)height) * 2.0f - 1.0f);
-
-	int i = 0;
-	for (i = 0; i < scene->ents_numb; ++i)
-	{
-		Entity* ent = scene->ents[i];
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, ent->position);
-		model = glm::rotate(model, glm::radians(ent->angle[0]), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(ent->angle[1]), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(ent->angle[2]), glm::vec3(0.0f, 0.0f, 1.0f));
-		model = glm::scale(model, ent->e_scale);
-
-		glm::mat4 MVP = projection * cam->view * model;
-
-		glm::vec4 ent_screen = MVP * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		ent_screen /= ent_screen.w;
-
-		glm::vec4 aabb = glm::vec4(ent->position.x + 0.5f, ent->position.y + 0.5f, 0.0f, 1.0f);
-		aabb = projection * cam->view * aabb;
-		aabb /= aabb.w;
-
-		bool check = false;
-		if (aabb.x >= nx && aabb.x - 2 * (aabb.x - ent_screen.x) <= nx && aabb.y >= ny && aabb.y - 2 * (aabb.y - ent_screen.y) <= ny)
-		{
-			scene->target = ent;
-			return true;
-		}
-	}
-	return false;
-}
-
-void	EditorUI::edit_target(Scene* scene)
-{
-	if (!scene->target)
-		return ;
-	Entity* ent = scene->target;
-	auto type = (int)ent->type;
-
-	ImGui::Begin("Target editor");
-	ImGui::Text("current entity type %s", ent_types[type].c_str());
-	ImGui::Text("entity ID %d", ent->id);
-
-	char bufx[64] = "";
-	char bufy[64] = "";
-
-	snprintf(bufx, 64, "%f", ent->position.x);
-	snprintf(bufy, 64, "%f", ent->position.y);
-	ImGui::Text("Position");
-	ImGui::InputText("x", bufx, 10);
-	ImGui::InputText("y", bufy, 10);
-	ent->position.x = atof(bufx);
-	ent->position.y = atof(bufy);
-
-	if (ent_types[type] == "Player")
-	{
-
-	}
-	else if (ent_types[type] == "Obstacle")
-	{
-
-	}
-	else if (ent_types[type] == "Light")
-	{
-		ImGui::SliderFloat("red", &scene->point_lights[0]->color[0], 0.0f, 1.0f);
-		ImGui::SliderFloat("green", &scene->point_lights[0]->color[1], 0.0f, 1.0f);
-		ImGui::SliderFloat("blue", &scene->point_lights[0]->color[2], 0.0f, 1.0f);
-		ImGui::SliderFloat("constant", &scene->point_lights[0]->constant, 0.1f, 1.5f);
-		ImGui::SliderFloat("linear", &scene->point_lights[0]->linear, 0.01f, 0.5f);
-		ImGui::SliderFloat("quadratic", &scene->point_lights[0]->quadratic, 0.001f, 0.05f);
-	}
-	ImGui::End();
-}
-
-void	EditorUI::recalc_proj(int width, int height)
-{
-	projection = glm::perspective(glm::radians(70.0f), (float)width / (float)height, 0.1f, 100.0f);
-	this->width = width;
-	this->height = height;
-}
-
-void	EditorUI::close()
-{
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
 }

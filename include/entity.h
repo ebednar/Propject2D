@@ -15,9 +15,9 @@ class Entity
 public:
 	Model		*mod;
 	Material	material;
-	glm::vec3	position;
-	glm::vec3	e_scale;
-	glm::vec3	angle;
+	glm::vec3	position = {0.0f, 0.0f, 0.0f};
+	glm::vec3	e_scale = { 1.0f, 1.0f, 1.0f };
+	glm::vec3	angle = { 0.0f, 0.0f, 0.0f };
 	glm::mat4	MVP;
 	entity_type	type;
 	int			id;

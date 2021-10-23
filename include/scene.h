@@ -24,6 +24,7 @@ public:
 	Scene();
 	int		load_scene(const char* path);
 	void	add_entity(Entity* ent);
+	void	create_entity(entity_type type);
 	void	add_point_light(Light* ent);
 	int		save_scene(const char* path);
 	void	update_scene();

@@ -52,7 +52,7 @@ void Render::draw_scene(Scene* scene, Camera* cam)
 		glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, glm::value_ptr(MVP));
 
 		glUniform1i(glGetUniformLocation(ent->material.shader_id, "lightNumb"), 1);
-		glUniform3f(glGetUniformLocation(ent->material.shader_id, "lightPos"), scene->point_lights[0]->position.x, scene->point_lights[0]->position.y, scene->point_lights[0]->position.z);
+		glUniform3f(glGetUniformLocation(ent->material.shader_id, "lightPos"), light->position.x, light->position.y, light->position.z + 2.0f);
 		glUniform3f(glGetUniformLocation(ent->material.shader_id, "viewPos"), cam->pos.x, cam->pos.y, cam->pos.z);
 		glUniform1i(glGetUniformLocation(ent->material.shader_id, "material.diffuse"), 0);
 		glUniform3f(glGetUniformLocation(ent->material.shader_id, "material.specular"), 0.2f, 0.2f, 0.2f);
@@ -95,7 +95,7 @@ void Render::draw_target(Scene* scene, Camera* cam)
 	glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	glUniform1i(glGetUniformLocation(ent->material.shader_id, "lightNumb"), 1);
-	glUniform3f(glGetUniformLocation(ent->material.shader_id, "lightPos"), scene->point_lights[0]->position.x, scene->point_lights[0]->position.y, scene->point_lights[0]->position.z);
+	glUniform3f(glGetUniformLocation(ent->material.shader_id, "lightPos"), light->position.x, light->position.y, light->position.z + 2.0f);
 	glUniform3f(glGetUniformLocation(ent->material.shader_id, "viewPos"), cam->pos.x, cam->pos.y, cam->pos.z);
 	glUniform1i(glGetUniformLocation(ent->material.shader_id, "material.diffuse"), 0);
 	glUniform3f(glGetUniformLocation(ent->material.shader_id, "material.specular"), 0.2f, 0.2f, 0.2f);
@@ -157,7 +157,7 @@ void	Render::draw_tilemap(Scene* scene, Camera* cam)
 	glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, glm::value_ptr(MVP));
 
 	glUniform1i(glGetUniformLocation(tilemap->shader_id, "lightNumb"), 1);
-	glUniform3f(glGetUniformLocation(tilemap->shader_id, "lightPos"), scene->point_lights[0]->position.x, scene->point_lights[0]->position.y, scene->point_lights[0]->position.z);
+	glUniform3f(glGetUniformLocation(tilemap->shader_id, "lightPos"), light->position.x, light->position.y, light->position.z + 2.0f);
 	glUniform3f(glGetUniformLocation(tilemap->shader_id, "viewPos"), cam->pos.x, cam->pos.y, cam->pos.z);
 	glUniform1i(glGetUniformLocation(tilemap->shader_id, "material.diffuse"), 0);
 	glUniform3f(glGetUniformLocation(tilemap->shader_id, "material.specular"), 0.2f, 0.2f, 0.2f);
