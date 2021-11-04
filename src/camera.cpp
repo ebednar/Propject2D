@@ -2,7 +2,7 @@
 
 Camera::Camera()
 {
-	pos = glm::vec3(0.0f, 0.0f, 7.0f);
+	pos = glm::vec3(0.0f, 0.0f, 6.0f);
 	front = glm::vec3(0.0f, 0.0f, -1.0f);
 	target = glm::vec3(0.0f, 0.0f, 0.0f);
 	direction = glm::normalize(pos - target);

@@ -39,16 +39,16 @@ void Engine::init_engine(const char* name, int width, int height)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendEquation(GL_FUNC_ADD);
-	/*glEnable(GL_STENCIL_TEST);
+	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);*/
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 	this->width = width;
 	this->height = height;
 
-	events.yaw = cam.yaw;
-	events.pitch = cam.pitch;
+	events.yaw = camera.yaw;
+	events.pitch = camera.pitch;
 
-	rend.init(static_cast<float>(width), static_cast<float>(height));
+	render.init(static_cast<float>(width), static_cast<float>(height));
 	
 	/*skybox.init();
 	skybox.set_shader("res/shaders/skybox_vert.glsl", "res/shaders/skybox_frag.glsl");*/
@@ -62,9 +62,6 @@ void Engine::run_engine()
 	old_time = glfwGetTime();
 	while (!glfwWindowShouldClose(window))
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT /*| GL_STENCIL_BUFFER_BIT*/);
-		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
-
 		delta_time = glfwGetTime() - old_time;
 		timer += delta_time;
 		fps_counter++;
@@ -76,22 +73,29 @@ void Engine::run_engine()
 		}
 		old_time = glfwGetTime();
 		
-		//rend.draw_skybox(&skybox, &cam);
-		if (scene.is_loaded)
-		{
-			scene.update_scene();
-			rend.draw_tilemap(&scene, &cam);
-			if (!editorUI.is_edit_tilemap)
-				rend.draw_scene(&scene, &cam);
-		}
+		scene.update_scene();
+
+		render.draw(&scene, &camera, &skybox, editorUI.is_edit_tilemap);
+
+		//float pix[4];
+		//glReadPixels(events.last_x, height - events.last_y, 1, 1, GL_RGBA, GL_FLOAT, &pix);
+		//std::cout << pix[0] << ' ' << pix[1] << ' ' << pix[2] << ' ' << pix[3] << std::endl;
+
+		//int pixi;
+		//glReadPixels(events.last_x, height - events.last_y, 1, 1, GL_RED_INTEGER, GL_INT, &pixi);
+		//std::cout << pixi << std::endl;
+
 	#ifdef EDITOR
 		if (scene.target)
-			rend.draw_target(&scene, &cam);
+			render.draw_target(&scene, &camera);
 		editorUI.start_frame();
 		editorUI.edit_target(&scene);
 		editorUI.draw(&scene, fps);
 		if (editorUI.is_edit_tilemap)
+		{
 			editorUI.edit_tilemap(&scene);
+			editorUI.choose_tile(&scene, &camera, events.last_x, events.last_y);
+		}
 		editorUI.end_frame();
 	#endif // EDITOR
 
@@ -119,32 +123,34 @@ void	 Engine::change_text(std::string str, int id)
 
 void	Engine::events_handling()
 {
-	cam.speed = 8.0f * delta_time;
+	camera.speed = 8.0f * delta_time;
 	mouse_speed = 15.0f * delta_time;
+	scroll_speed = 20.0f * delta_time;
 
 #ifdef EDITOR
 
 	if (events.keys[GLFW_KEY_UP])
-		cam.pos.z += cam.speed;
+		camera.pos.z += camera.speed;
 	if (events.keys[GLFW_KEY_DOWN])
-		cam.pos.z -= cam.speed;
+		camera.pos.z -= camera.speed;
 	if (events.keys[GLFW_KEY_LEFT])
-		cam.pos.x -= cam.speed;
+		camera.pos.x -= camera.speed;
 	if (events.keys[GLFW_KEY_RIGHT])
-		cam.pos.x += cam.speed;
+		camera.pos.x += camera.speed;
 
 	// hold right mouse to scroll screen
 	if (events.r_clicked)
 	{
-		cam.pos.x -= events.xoffset * mouse_speed;
-		cam.pos.y -= events.yoffset * mouse_speed;
+		camera.pos.x -= events.xoffset * scroll_speed;
+		camera.pos.y -= events.yoffset * scroll_speed;
 	}
 	
 	// click left mouse to choose entity
 	static bool targeted = false;
+	editorUI.choose_ent(&scene, &camera, events.last_x, events.last_y);
 	if (events.l_clicked && !editorUI.is_edit_tilemap)
 	{
-		targeted = editorUI.choose_ent(&scene, &cam, events.last_x, events.last_y);
+		targeted = editorUI.choose_ent_world_to_screen(&scene, &camera, events.last_x, events.last_y);
 		events.l_hold = true;
 		events.l_clicked = false;
 	}
@@ -165,16 +171,16 @@ void	Engine::events_handling()
 
 #endif // EDITOR
 
-	// camera rotation
-	//cam.yaw = events.yaw;
-	//cam.pitch = events.pitch;
-	cam.update_free();
+	// cameraera rotation
+	//camera.yaw = events.yaw;
+	//camera.pitch = events.pitch;
+	camera.update_free();
 
 	if (events.resize)
 	{
 		width = events.width;
 		height = events.height;
-		rend.recalc_proj(width, height);
+		render.recalc_proj(width, height);
 		editorUI.recalc_proj(width, height);
 		glViewport(0, 0, width, height);
 		events.resize = false;

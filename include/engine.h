@@ -11,7 +11,7 @@
 
 class Engine {
 public:
-	Camera						cam;
+	Camera						camera;
 	Scene						scene;
 	Events						events;
 	Skybox						skybox;
@@ -27,11 +27,12 @@ public:
 	void	change_text(std::string str, int id);
 private:
 	GLFWwindow				*window;
-	Render					rend;
+	Render					render;
 	ui_text					texter;
 	double					old_time = 0.0;
 	double					timer = 0.0;
 	float					mouse_speed = 0.0f;
+	float					scroll_speed = 0.0f;
 	int						fps_counter = 0;
 	int						fps = 0;
 	int						width = 0;

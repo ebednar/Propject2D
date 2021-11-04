@@ -11,7 +11,7 @@ out vec3 vFragPos;
 uniform mat4 u_M;
 uniform mat4 u_V;
 uniform mat4 u_P;
-uniform mat4 u_MVP;
+//uniform mat4 u_MVP;
 
 void main()
 {

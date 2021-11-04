@@ -144,18 +144,18 @@ int		Scene::load_map(const char* path)
 		{
 			if (i == ' ')
 			{
-				tilemap.tiles[y * tilemap.raws + x].id = std::stoi(str);
-				tilemap.tiles[y * tilemap.raws + x].x = x;
-				tilemap.tiles[y * tilemap.raws + x].y = y;
+				tilemap.tiles[y * tilemap.columns + x].id = std::stoi(str);
+				tilemap.tiles[y * tilemap.columns + x].x = x;
+				tilemap.tiles[y * tilemap.columns + x].y = y;
 				str = "";
 				x++;
 				tilemap.tile_numb++;
 			}
 			str += i;
 		}
-		tilemap.tiles[y * tilemap.raws + x].id = std::stoi(str);
-		tilemap.tiles[y * tilemap.raws + x].x = x;
-		tilemap.tiles[y * tilemap.raws + x].y = y;
+		tilemap.tiles[y * tilemap.columns + x].id = std::stoi(str);
+		tilemap.tiles[y * tilemap.columns + x].x = x;
+		tilemap.tiles[y * tilemap.columns + x].y = y;
 		str = "";
 		x = 0;
 		y++;
@@ -325,6 +325,7 @@ int		Scene::save_scene(const char* path)
 	std::stringstream out;
 	std::cout << "saving scene " << path << std::endl;
 
+	tilemap.save_tilemap(name);
 	out << "#map\n" << name << '\n';
 	for (Entity* ent : ents)
 	{
@@ -371,6 +372,8 @@ void	Scene::close_scene()
 	target = nullptr;
 	delete[] tilemap.tiles;
 	tilemap.tiles = nullptr;
+	delete[] tilemap.mod.vertices;
+	tilemap.mod.vertices = nullptr;
 	tilemap.tile_numb = 0;
 	tilemap.shader_id = 0;
 	tilemap.texture_id = 0;
@@ -391,4 +394,27 @@ void	Scene::close_scene()
 	ents_numb = 0;
 	lights_numb = 0;
 	is_loaded = false;
+}
+
+void	Scene::destroy_entity(Entity* ent)
+{
+	if (ent->type == entity_type::Light)
+		for (int i = 0; i < lights_numb; ++i)
+		{
+			if (point_lights[i]->id == ent->id)
+			{
+				point_lights.erase(point_lights.begin() + i);
+				break;
+			}
+		}
+	for (int i = 0; i < ents_numb; ++i)
+	{
+		if (ents[i]->id == ent->id)
+		{
+			delete ents[i];
+			ents.erase(ents.begin() + i);
+			break;
+		}
+	}
+	ents_numb--;
 }

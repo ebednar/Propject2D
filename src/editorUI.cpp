@@ -93,6 +93,11 @@ void	EditorUI::draw(Scene* scene, int fps)
 			is_edit_tilemap = true;
 			scene->target = nullptr;
 		}
+		if (ImGui::Button("Edit scene"))
+		{
+			is_edit_tilemap = false;
+			scene->target = nullptr;
+		}
 		if (ImGui::CollapsingHeader("Create entity"))
 		{
 			if (ImGui::Button("Create point light"))
@@ -109,6 +114,21 @@ void	EditorUI::draw(Scene* scene, int fps)
 }
 
 bool	EditorUI::choose_ent(Scene* scene, Camera* cam, float x, float y)
+{
+	float nx = (x / (float)width) * 2.0f - 1.0f;
+	float ny = -((y / (float)height) * 2.0f - 1.0f);
+
+	
+	glm::mat4 MVP = projection * cam->view;
+	glm::vec4 mouse = glm::inverse(MVP) * glm::vec4(nx, ny, 0.0f, 1.0f);
+
+	/*ImGui::Begin("Testong");
+	ImGui::Text("11");
+	ImGui::End();*/
+	return false;
+}
+
+bool	EditorUI::choose_ent_world_to_screen(Scene* scene, Camera* cam, float x, float y)
 {
 	float nx = (x / (float)width) * 2.0f - 1.0f;
 	float ny = -((y / (float)height) * 2.0f - 1.0f);
@@ -157,26 +177,49 @@ void	EditorUI::edit_target(Scene* scene)
 	char bufx[64] = "";
 	char bufy[64] = "";
 
+	
+
 	ImGui::Text("Position");
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.1f, 1.0f });
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.1f, 1.0f });
-	if (ImGui::Button("X"))
+	if (ImGui::Button("X##pos"))
 		ent->position.x = 0.0f;
 	ImGui::PopStyleColor(3);
 	ImGui::SameLine(25.0f);
 	ImGui::PushItemWidth(50.0f);
-	ImGui::DragFloat("##X", &ent->position.x, 0.1f);
+	ImGui::DragFloat("##X_pos", &ent->position.x, 0.1f);
 
 	ImGui::SameLine(90.0f);
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.8f, 0.1f, 1.0f });
 	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.9f, 0.2f, 1.0f });
 	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.8f, 0.1f, 1.0f });
-	if (ImGui::Button("Y"))
+	if (ImGui::Button("Y##pos"))
 		ent->position.y = 0.0f;
 	ImGui::PopStyleColor(3);
 	ImGui::SameLine(107.0f);
-	ImGui::DragFloat("##Y", &ent->position.y, 0.1f);
+	ImGui::DragFloat("##Y_pos", &ent->position.y, 0.1f);
+
+	ImGui::Text("Scale");
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.1f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.1f, 1.0f });
+	if (ImGui::Button("X##scale"))
+		ent->e_scale.x = 1.0f;
+	ImGui::PopStyleColor(3);
+	ImGui::SameLine(25.0f);
+	ImGui::PushItemWidth(50.0f);
+	ImGui::DragFloat("##X_scale", &ent->e_scale.x, 0.1f);
+
+	ImGui::SameLine(90.0f);
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.8f, 0.1f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.9f, 0.2f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.8f, 0.1f, 1.0f });
+	if (ImGui::Button("Y##scale"))
+		ent->e_scale.y = 1.0f;
+	ImGui::PopStyleColor(3);
+	ImGui::SameLine(107.0f);
+	ImGui::DragFloat("##Y_scale", &ent->e_scale.y, 0.1f);
 
 	if (ent->type == entity_type::Player)
 	{
@@ -201,22 +244,65 @@ void	EditorUI::edit_target(Scene* scene)
 			}
 		}
 	}
+	if (ImGui::Button("Delete entity"))
+	{
+		scene->destroy_entity(scene->target);
+		scene->target = nullptr;
+	}
 	ImGui::End();
 }
 
 void	EditorUI::edit_tilemap(Scene* scene)
 {
+	static int new_raws = scene->tilemap.raws;
+	static int new_columns = scene->tilemap.columns;
 	ImGui::Begin("Tilemap editor");
-	//if (ImGui::BeginTable("Tilemap", scene->tilemap.columns))
+	ImGui::Text("Change tilemap size");
+	ImGui::PushItemWidth(100.0f);
+	ImGui::InputInt("Raws", &new_raws, 1);
+	ImGui::SameLine();
+	ImGui::InputInt("Columns", &new_columns, 1);
+	ImGui::SameLine();
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.1f, 0.8f, 1.0f });
+	if (ImGui::Button("Generate new map"))
 	{
-		//for (int i = 0; i < scene->tilemap.tile_numb; ++i)
-		{
-			ImGui::TableNextColumn(); ImGui::InputInt("##Tile", &scene->tilemap.tiles[0].id, 1);
-			ImGui::TableNextColumn(); ImGui::InputInt("##Tile", &scene->tilemap.tiles[1].id, 1);
-		}
-		//ImGui::EndTable();
+		scene->tilemap.regenerate_new_map(scene->model_atlas["sprite"], new_raws, new_columns);
 	}
+	ImGui::PopStyleColor(1);
+	/*if (ImGui::BeginTable("Tilemap", scene->tilemap.columns))
+	{
+		for (int i = 0; i < scene->tilemap.tile_numb; ++i)
+		{
+			std::string str = "##Tile" + std::to_string(i);
+			ImGui::TableNextColumn(); ImGui::InputInt(str.c_str(), &scene->tilemap.tiles[i].id, 1);
+		}
+		ImGui::EndTable();
+	}*/
 	ImGui::End();
+	scene->tilemap.regenerate_map(scene->model_atlas["sprite"]);
+}
+
+bool	EditorUI::choose_tile(Scene* scene, Camera* cam, float x, float y)
+{
+	float nx = (x / (float)width) * 2.0f - 1.0f;
+	float ny = -((y / (float)height) * 2.0f - 1.0f);
+
+	glm::vec4 clipCoords = glm::vec4(nx, ny, -1.0f, 1.0f);
+	glm::mat4 invP = glm::inverse(projection);
+	glm::vec4 eyeCoords = invP * clipCoords;
+	eyeCoords = glm::vec4(eyeCoords.x, eyeCoords.y, -1.0f, 0.0f);
+	glm::mat4 invV = glm::inverse(cam->view);
+	glm::vec4 rayWorld = invV * eyeCoords;
+	glm::vec3 mouseRay = glm::vec3(rayWorld);
+	glm::normalize(mouseRay);
+
+	bool check = false;
+
+	ImGui::Begin("Tilemap ed");
+	ImGui::Text("mouseRay %f %f %f", mouseRay.x, mouseRay.y, mouseRay.z);
+	ImGui::End();
+
+	return false;
 }
 
 void	EditorUI::recalc_proj(int width, int height)
