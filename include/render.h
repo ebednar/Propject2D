@@ -16,15 +16,16 @@ private:
 	unsigned int	screenVAO;
 	int				screen_shader;
 public:
+	~Render();
 	void	init(float width = 640.0, float height = 480.0);
-	void	recalc_proj(float width, float height);
+	void	resize(float width, float height);
 	void	draw(Scene* scene, Camera* camera, Skybox* skybox, bool is_edit_tilemap = false);
 	void	draw_target(Scene* scene, Camera* camera);
+	int		read_pixel(int x, int y);
 private:
 	void	create_framebuffer(float width, float height);
 	void	draw_scene(Scene* scene, Camera* camera);
 	void	draw_skybox(Skybox* skybox, Camera* camera);
 	void	draw_tilemap(Scene* scene, Camera* camera);
-	void	draw_ortho(Scene* scene, Camera* camera);
 	void	draw_from_framebuffer();
 };

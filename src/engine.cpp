@@ -4,7 +4,6 @@
 
 Engine::~Engine()
 {
-	scene.close_scene();
 	std::cout << "Engine off" << std::endl;
 }
 
@@ -77,14 +76,6 @@ void Engine::run_engine()
 
 		render.draw(&scene, &camera, &skybox, editorUI.is_edit_tilemap);
 
-		//float pix[4];
-		//glReadPixels(events.last_x, height - events.last_y, 1, 1, GL_RGBA, GL_FLOAT, &pix);
-		//std::cout << pix[0] << ' ' << pix[1] << ' ' << pix[2] << ' ' << pix[3] << std::endl;
-
-		//int pixi;
-		//glReadPixels(events.last_x, height - events.last_y, 1, 1, GL_RED_INTEGER, GL_INT, &pixi);
-		//std::cout << pixi << std::endl;
-
 	#ifdef EDITOR
 		if (scene.target)
 			render.draw_target(&scene, &camera);
@@ -106,6 +97,7 @@ void Engine::run_engine()
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
 	editorUI.close();
+	scene.close_scene();
 	glfwDestroyWindow(window);
 	glfwTerminate();
 }
@@ -147,7 +139,7 @@ void	Engine::events_handling()
 	
 	// click left mouse to choose entity
 	static bool targeted = false;
-	editorUI.choose_ent(&scene, &camera, events.last_x, events.last_y);
+	editorUI.choose_ent(&scene, &camera, render.read_pixel(events.last_x, height - events.last_y));
 	if (events.l_clicked && !editorUI.is_edit_tilemap)
 	{
 		targeted = editorUI.choose_ent_world_to_screen(&scene, &camera, events.last_x, events.last_y);
@@ -180,7 +172,7 @@ void	Engine::events_handling()
 	{
 		width = events.width;
 		height = events.height;
-		render.recalc_proj(width, height);
+		render.resize(width, height);
 		editorUI.recalc_proj(width, height);
 		glViewport(0, 0, width, height);
 		events.resize = false;

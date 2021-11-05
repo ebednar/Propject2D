@@ -52,7 +52,7 @@ void Render::create_framebuffer(float width, float height)
 
 	glGenTextures(1, &idBufferTexture);
 	glBindTexture(GL_TEXTURE_2D, idBufferTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, width, height, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -68,9 +68,12 @@ void Render::create_framebuffer(float width, float height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Render::recalc_proj(float width, float height)
+void Render::resize(float width, float height)
 {
 	projection = glm::perspective(glm::radians(70.0f), width / height, 0.1f, 100.0f);
+
+	glDeleteFramebuffers(1, &framebuffer);
+	create_framebuffer(width, height);
 }
 
 void Render::draw(Scene* scene, Camera* camera, Skybox* skybox, bool is_edit_tilemap)
@@ -78,7 +81,6 @@ void Render::draw(Scene* scene, Camera* camera, Skybox* skybox, bool is_edit_til
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
-	//draw_ortho(scene, camera);
 	//draw_skybox(skybox, camera);
 	draw_tilemap(scene, camera);
 	if (!is_edit_tilemap)
@@ -92,10 +94,10 @@ void Render::draw_scene(Scene* scene, Camera* camera)
 	for (int i = 0; i < length; ++i)
 	{
 		Entity* ent = scene->ents[i];
-#ifdef EDITOR
-		if (ent == scene->target)
-			continue ;
-#endif
+//#ifdef EDITOR
+//		if (ent == scene->target)
+//			continue ;
+//#endif
 		Model* mod = ent->mod;
 		Light* light = scene->point_lights[0];
 		glUseProgram(ent->material.shader_id);
@@ -246,6 +248,7 @@ void	Render::draw_from_framebuffer()
 	glUseProgram(screen_shader);
 	glBindVertexArray(screenVAO);
 	glBindTexture(GL_TEXTURE_2D, colorBufferTexture);	// use the color attachment texture as the texture of the quad plane
+	//glBindTexture(GL_TEXTURE_2D, idBufferTexture);	// use the color attachment texture as the texture of the quad plane
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -262,4 +265,19 @@ void	Render::draw_skybox(Skybox *skybox, Camera* camera)
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->texture);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glDepthMask(GL_TRUE);
+}
+
+int		Render::read_pixel(int x, int y)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	int pix = -1;
+	glReadBuffer(GL_COLOR_ATTACHMENT1);
+	glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, &pix);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	return pix;
+}
+
+Render::~Render()
+{
+	glDeleteFramebuffers(1, &framebuffer);
 }

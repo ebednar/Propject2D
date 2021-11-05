@@ -26,7 +26,8 @@ uniform vec3 lightPos[1];
 uniform vec3 viewPos;
 uniform Material material;
 
-out vec4 fColor;
+layout(location = 0) out vec4	fColor;
+layout(location = 1) out int	Color2;
 
 void main()
 {
@@ -60,4 +61,5 @@ void main()
 		result += specular;
 	}
 	fColor = vec4(result, 1.0f);
+	Color2 = 50;
 }

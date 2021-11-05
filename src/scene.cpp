@@ -179,13 +179,14 @@ int		Scene::load_scene(const char* path)
 		std::cout << "scene file not found" << std::endl;
 		return 1;
 	}
+	scene_name = path;
 	std::string line;
 	while (std::getline(file, line))
 	{
 		if (line == "#map")
 		{
 			std::getline(file, line);
-			name = line;
+			map_name = line;
 		}
 		if (line == "#player")
 		{
@@ -221,7 +222,7 @@ int		Scene::load_scene(const char* path)
 	}
 	file.close();
 	std::string map_path("res/scene/");
-	map_path += name;
+	map_path += map_name;
 	load_map(map_path.c_str());
 	target = nullptr;
 	is_loaded = true;
@@ -325,8 +326,8 @@ int		Scene::save_scene(const char* path)
 	std::stringstream out;
 	std::cout << "saving scene " << path << std::endl;
 
-	tilemap.save_tilemap(name);
-	out << "#map\n" << name << '\n';
+	tilemap.save_tilemap(map_name);
+	out << "#map\n" << map_name << '\n';
 	for (Entity* ent : ents)
 	{
 		if (ent->type == entity_type::Player)
@@ -369,6 +370,7 @@ void	Scene::update_scene()
 
 void	Scene::close_scene()
 {
+	std::cout << "close scene " << scene_name << std::endl;
 	target = nullptr;
 	delete[] tilemap.tiles;
 	tilemap.tiles = nullptr;
@@ -390,7 +392,7 @@ void	Scene::close_scene()
 	for (auto light : point_lights)
 		light = nullptr;
 	point_lights.clear();
-	name = "";
+	map_name = "";
 	ents_numb = 0;
 	lights_numb = 0;
 	is_loaded = false;

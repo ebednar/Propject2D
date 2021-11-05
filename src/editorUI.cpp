@@ -6,6 +6,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "win_dialog.h"
 
+#include <iostream>
+
 void	EditorUI::init(GLFWwindow* window, int width, int height)
 {
 	this->window = window;
@@ -113,14 +115,9 @@ void	EditorUI::draw(Scene* scene, int fps)
 	}
 }
 
-bool	EditorUI::choose_ent(Scene* scene, Camera* cam, float x, float y)
+bool	EditorUI::choose_ent(Scene* scene, Camera* cam, int id)
 {
-	float nx = (x / (float)width) * 2.0f - 1.0f;
-	float ny = -((y / (float)height) * 2.0f - 1.0f);
-
-	
-	glm::mat4 MVP = projection * cam->view;
-	glm::vec4 mouse = glm::inverse(MVP) * glm::vec4(nx, ny, 0.0f, 1.0f);
+	std::cout << id << std::endl;
 
 	/*ImGui::Begin("Testong");
 	ImGui::Text("11");
