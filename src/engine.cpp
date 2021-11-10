@@ -27,7 +27,9 @@ void Engine::init_engine(const char* name, int width, int height)
 		exit(EXIT_FAILURE);
 	}
 	glfwSetKeyCallback(window, key_callback);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+#ifndef EDITOR
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+#endif // !EDITOR
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
 	glfwSetWindowSizeCallback(window, window_size_callback);
@@ -47,7 +49,7 @@ void Engine::init_engine(const char* name, int width, int height)
 	events.yaw = camera.yaw;
 	events.pitch = camera.pitch;
 
-	render.init(static_cast<float>(width), static_cast<float>(height));
+	render.init(projection_type::ortho, static_cast<float>(width), static_cast<float>(height));
 	
 	/*skybox.init();
 	skybox.set_shader("res/shaders/skybox_vert.glsl", "res/shaders/skybox_frag.glsl");*/
@@ -81,11 +83,11 @@ void Engine::run_engine()
 			render.draw_target(&scene, &camera);
 		editorUI.start_frame();
 		editorUI.edit_target(&scene);
+		editorUI.edit_target_tile(&scene);
 		editorUI.draw(&scene, fps);
 		if (editorUI.is_edit_tilemap)
 		{
 			editorUI.edit_tilemap(&scene);
-			editorUI.choose_tile(&scene, &camera, events.last_x, events.last_y);
 		}
 		editorUI.end_frame();
 	#endif // EDITOR
@@ -139,7 +141,10 @@ void	Engine::events_handling()
 	
 	// click left mouse to choose entity
 	static bool targeted = false;
-	editorUI.choose_ent(&scene, &camera, render.read_pixel(events.last_x, height - events.last_y));
+	if (events.l_clicked)
+	{
+		editorUI.choose_tile(&scene, &camera, render.read_pixel(events.last_x, height - events.last_y));
+	}
 	if (events.l_clicked && !editorUI.is_edit_tilemap)
 	{
 		targeted = editorUI.choose_ent_world_to_screen(&scene, &camera, events.last_x, events.last_y);

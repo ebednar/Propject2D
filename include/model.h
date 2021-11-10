@@ -1,9 +1,17 @@
 #pragma once
 
+struct Vertex
+{
+	float	pos[3];
+	float	uv[2];
+	float	normal[3];
+	int		id;
+};
+
 class Model
 {
 public:
-	float			*vertices;
+	Vertex			*vertices;
 	unsigned int	*indices;
 	unsigned int	vert_number;
 	unsigned int	ind_number;

@@ -14,7 +14,7 @@ class Tilemap
 public:
 	Model			mod;
 	Tile*			tiles = nullptr;
-	float*			vertices;
+	Vertex*			vertices;
 	unsigned int	tile_numb = 0;
 	int				raws = 0;
 	int				columns = 0;

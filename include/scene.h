@@ -18,6 +18,7 @@ public:
 	std::string							map_name = "";
 	std::string							scene_name = "";
 	Entity*								target = nullptr;
+	Tile*								target_tile = nullptr;
 	unsigned int						ents_numb = 0;
 	unsigned int						lights_numb = 0;
 	bool								is_loaded = false;
@@ -35,6 +36,6 @@ private:
 	int		load_resources(const char* path);
 	int		load_map(const char* path);
 	void	load_texture(std::string name, const char* path);
-	void	place_ent(Entity* ent, std::string line);
-	void	read_light_info(Light* ent, std::string line);
+	void	place_ent(Entity* ent, std::string line, std::string data);
+	void	read_light_info(Light* ent, std::string line, std::string data);
 };

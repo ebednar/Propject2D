@@ -3,6 +3,7 @@
 in vec2 vTexCoord;
 in vec3 vNormal;
 in vec3 vFragPos;
+flat in int vId;
 
 struct Material {
 	sampler2D diffuse;
@@ -61,5 +62,5 @@ void main()
 		result += specular;
 	}
 	fColor = vec4(result, 1.0f);
-	Color2 = 50;
+	Color2 = vId;
 }

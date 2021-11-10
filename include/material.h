@@ -1,13 +1,15 @@
 #pragma once
+#include <string>
 
 class Material
 {
 public:
+	std::string		texture_name = "";
 	float			diffuse[3];
 	float			specular[3];
+	unsigned int	texture_id;
 	int				shininess;
 	int				shader_id;
-	unsigned int	texture_id;
 	int				text_width;
 	int				text_height;
 public:

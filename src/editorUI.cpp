@@ -99,6 +99,7 @@ void	EditorUI::draw(Scene* scene, int fps)
 		{
 			is_edit_tilemap = false;
 			scene->target = nullptr;
+			scene->target_tile = nullptr;
 		}
 		if (ImGui::CollapsingHeader("Create entity"))
 		{
@@ -115,13 +116,13 @@ void	EditorUI::draw(Scene* scene, int fps)
 	}
 }
 
-bool	EditorUI::choose_ent(Scene* scene, Camera* cam, int id)
+bool	EditorUI::choose_tile(Scene* scene, Camera* cam, int id)
 {
-	std::cout << id << std::endl;
+	if (!is_edit_tilemap)
+		return false;
 
-	/*ImGui::Begin("Testong");
-	ImGui::Text("11");
-	ImGui::End();*/
+	if (id >= 0 && id < scene->tilemap.tile_numb)
+		scene->target_tile = &scene->tilemap.tiles[id];
 	return false;
 }
 
@@ -173,8 +174,6 @@ void	EditorUI::edit_target(Scene* scene)
 
 	char bufx[64] = "";
 	char bufy[64] = "";
-
-	
 
 	ImGui::Text("Position");
 	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.1f, 1.0f });
@@ -266,40 +265,17 @@ void	EditorUI::edit_tilemap(Scene* scene)
 		scene->tilemap.regenerate_new_map(scene->model_atlas["sprite"], new_raws, new_columns);
 	}
 	ImGui::PopStyleColor(1);
-	/*if (ImGui::BeginTable("Tilemap", scene->tilemap.columns))
-	{
-		for (int i = 0; i < scene->tilemap.tile_numb; ++i)
-		{
-			std::string str = "##Tile" + std::to_string(i);
-			ImGui::TableNextColumn(); ImGui::InputInt(str.c_str(), &scene->tilemap.tiles[i].id, 1);
-		}
-		ImGui::EndTable();
-	}*/
 	ImGui::End();
 	scene->tilemap.regenerate_map(scene->model_atlas["sprite"]);
 }
 
-bool	EditorUI::choose_tile(Scene* scene, Camera* cam, float x, float y)
+void	EditorUI::edit_target_tile(Scene* scene)
 {
-	float nx = (x / (float)width) * 2.0f - 1.0f;
-	float ny = -((y / (float)height) * 2.0f - 1.0f);
-
-	glm::vec4 clipCoords = glm::vec4(nx, ny, -1.0f, 1.0f);
-	glm::mat4 invP = glm::inverse(projection);
-	glm::vec4 eyeCoords = invP * clipCoords;
-	eyeCoords = glm::vec4(eyeCoords.x, eyeCoords.y, -1.0f, 0.0f);
-	glm::mat4 invV = glm::inverse(cam->view);
-	glm::vec4 rayWorld = invV * eyeCoords;
-	glm::vec3 mouseRay = glm::vec3(rayWorld);
-	glm::normalize(mouseRay);
-
-	bool check = false;
-
-	ImGui::Begin("Tilemap ed");
-	ImGui::Text("mouseRay %f %f %f", mouseRay.x, mouseRay.y, mouseRay.z);
+	if (!scene->target_tile)
+		return ;
+	ImGui::Begin("Tile editor");
+	ImGui::InputInt("Id", &scene->target_tile->id, 1);
 	ImGui::End();
-
-	return false;
 }
 
 void	EditorUI::recalc_proj(int width, int height)

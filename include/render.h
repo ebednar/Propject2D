@@ -4,11 +4,17 @@
 #include "ui_text.h"
 #include "skybox.h"
 
+enum class projection_type
+{
+	ortho,
+	perspective
+};
+
 class Render
 {
 private:
-	glm::mat4	projection;
-	glm::mat4	ortProjection;
+	glm::mat4		projection;
+	projection_type	proj_type = projection_type::ortho;
 	unsigned int	framebuffer;
 	unsigned int	colorBufferTexture;
 	unsigned int	idBufferTexture;
@@ -17,7 +23,7 @@ private:
 	int				screen_shader;
 public:
 	~Render();
-	void	init(float width = 640.0, float height = 480.0);
+	void	init(projection_type type, float width = 640.0, float height = 480.0);
 	void	resize(float width, float height);
 	void	draw(Scene* scene, Camera* camera, Skybox* skybox, bool is_edit_tilemap = false);
 	void	draw_target(Scene* scene, Camera* camera);

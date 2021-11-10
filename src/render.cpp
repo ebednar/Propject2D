@@ -6,7 +6,7 @@
 
 #define EDITOR
 
-void Render::init(float width, float height)
+void Render::init(projection_type type, float width, float height)
 {
 	float quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
 		// positions   // texCoords
@@ -33,8 +33,12 @@ void Render::init(float width, float height)
 
 	create_framebuffer(width, height);
 
-	projection = glm::perspective(glm::radians(70.0f), width / height, 0.1f, 100.0f);
-	ortProjection = glm::ortho(-8.0f, 8.0f, -4.5f, 4.5f, 0.1f, 100.0f);
+	proj_type = type;
+
+	if (type == projection_type::perspective)
+		projection = glm::perspective(glm::radians(70.0f), width / height, 0.1f, 100.0f);
+	else if (type == projection_type::ortho)
+		projection = glm::ortho(-8.0f, 8.0f, -4.5f, 4.5f, 0.1f, 100.0f);
 }
 
 void Render::create_framebuffer(float width, float height)
@@ -70,7 +74,10 @@ void Render::create_framebuffer(float width, float height)
 
 void Render::resize(float width, float height)
 {
-	projection = glm::perspective(glm::radians(70.0f), width / height, 0.1f, 100.0f);
+	if (proj_type == projection_type::perspective)
+		projection = glm::perspective(glm::radians(70.0f), width / height, 0.1f, 100.0f);
+	else if (proj_type == projection_type::ortho)
+		projection = glm::ortho(-8.0f, 8.0f, -4.5f, 4.5f, 0.1f, 100.0f);
 
 	glDeleteFramebuffers(1, &framebuffer);
 	create_framebuffer(width, height);
@@ -111,17 +118,12 @@ void Render::draw_scene(Scene* scene, Camera* camera)
 		model = glm::rotate(model, glm::radians(ent->angle[2]), glm::vec3(0.0f, 0.0f, 1.0f));
 		model = glm::scale(model, ent->e_scale);
 
-		glm::mat4 MVP = projection * camera->view * model;
-
 		unsigned int model_loc = glGetUniformLocation(ent->material.shader_id, "u_M");
 		glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
 		unsigned int view_loc = glGetUniformLocation(ent->material.shader_id, "u_V");
 		glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(camera->view));
 		unsigned int proj_loc = glGetUniformLocation(ent->material.shader_id, "u_P");
-		glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(ortProjection));
-
-		unsigned int mvp_loc = glGetUniformLocation(ent->material.shader_id, "u_MVP");
-		glUniformMatrix4fv(mvp_loc, 1, GL_FALSE, glm::value_ptr(MVP));
+		glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
 
 		glUniform1i(glGetUniformLocation(ent->material.shader_id, "lightNumb"), 1);
 		glUniform3f(glGetUniformLocation(ent->material.shader_id, "lightPos"), light->position.x, light->position.y, light->position.z + 2.0f);
@@ -162,7 +164,7 @@ void Render::draw_target(Scene* scene, Camera* camera)
 	unsigned int view_loc = glGetUniformLocation(ent->material.shader_id, "u_V");
 	glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(camera->view));
 	unsigned int proj_loc = glGetUniformLocation(ent->material.shader_id, "u_P");
-	glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(ortProjection));
+	glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	glUniform1i(glGetUniformLocation(ent->material.shader_id, "lightNumb"), 1);
 	glUniform3f(glGetUniformLocation(ent->material.shader_id, "lightPos"), light->position.x, light->position.y, light->position.z + 2.0f);
@@ -219,7 +221,7 @@ void	Render::draw_tilemap(Scene* scene, Camera* camera)
 	unsigned int view_loc = glGetUniformLocation(tilemap->shader_id, "u_V");
 	glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(camera->view));
 	unsigned int proj_loc = glGetUniformLocation(tilemap->shader_id, "u_P");
-	glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(ortProjection));
+	glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
 
 	glUniform1i(glGetUniformLocation(tilemap->shader_id, "lightNumb"), 1);
 	glUniform3f(glGetUniformLocation(tilemap->shader_id, "lightPos"), light->position.x, light->position.y, light->position.z + 2.0f);

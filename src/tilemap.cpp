@@ -6,19 +6,20 @@
 
 void	Tilemap::generate_batched_map(Model* sprite_mod)
 {
-	vertices = new float[sprite_mod->ind_number * 8 * tile_numb];
+	vertices = new Vertex[sprite_mod->ind_number * tile_numb];
 	for (int i = 0; i < tile_numb; ++i)
 	{
 		for (int j = 0; j < sprite_mod->ind_number; ++j)
 		{
-			vertices[i * 48 + j * 8] = sprite_mod->vertices[j * 8] + tiles[i].x; // position.x
-			vertices[i * 48 + j * 8 + 1] = sprite_mod->vertices[j * 8 + 1] - tiles[i].y; // position.y
-			vertices[i * 48 + j * 8 + 2] = sprite_mod->vertices[j * 8 + 2]; // position.z
-			vertices[i * 48 + j * 8 + 3] = sprite_mod->vertices[j * 8 + 3] * 0.05 + 0.0015 + 7 * 0.05; // uv.x    // 20  320
-			vertices[i * 48 + j * 8 + 4] = sprite_mod->vertices[j * 8 + 4] * 0.125 + 0.005 + tiles[i].id * 0.125; // uv.y    // 7  128
-			vertices[i * 48 + j * 8 + 5] = sprite_mod->vertices[j * 8 + 5]; // normal.x
-			vertices[i * 48 + j * 8 + 6] = sprite_mod->vertices[j * 8 + 6]; // normal.y
-			vertices[i * 48 + j * 8 + 7] = sprite_mod->vertices[j * 8 + 7]; // normal.z
+			vertices[i * 6 + j].pos[0] = sprite_mod->vertices[j].pos[0] + tiles[i].x; // position.x
+			vertices[i * 6 + j].pos[1] = sprite_mod->vertices[j].pos[1] - tiles[i].y; // position.y
+			vertices[i * 6 + j].pos[2] = sprite_mod->vertices[j].pos[2]; // position.z
+			vertices[i * 6 + j].uv[0] = sprite_mod->vertices[j].uv[0] * 0.05 + 0.0015 + 7 * 0.05; // uv.x    // 20  320
+			vertices[i * 6 + j].uv[1] = sprite_mod->vertices[j ].uv[1] * 0.125 + 0.005 + tiles[i].id * 0.125; // uv.y    // 7  128
+			vertices[i * 6 + j].normal[0] = sprite_mod->vertices[j ].normal[0]; // normal.x
+			vertices[i * 6 + j].normal[1] = sprite_mod->vertices[j ].normal[1]; // normal.y
+			vertices[i * 6 + j].normal[2] = sprite_mod->vertices[j ].normal[2]; // normal.z
+			vertices[i * 6 + j].id = i;
 		}
 	}
 	mod.vertices = vertices;
@@ -68,8 +69,8 @@ void	Tilemap::regenerate_map(Model* sprite_mod)
 	{
 		for (int j = 0; j < sprite_mod->ind_number; ++j)
 		{
-			vertices[i * 48 + j * 8 + 3] = sprite_mod->vertices[j * 8 + 3] * 0.05 + 0.0015 + 7 * 0.05; // uv.x    // 20  320
-			vertices[i * 48 + j * 8 + 4] = sprite_mod->vertices[j * 8 + 4] * 0.125 + 0.005 + tiles[i].id * 0.125; // uv.y    // 7  128
+			vertices[i * 6 + j].uv[0] = sprite_mod->vertices[j].uv[0] * 0.05 + 0.0015 + 7 * 0.05; // uv.x    // 20  320
+			vertices[i * 6 + j].uv[1] = sprite_mod->vertices[j].uv[1] * 0.125 + 0.005 + tiles[i].id * 0.125; // uv.y    // 7  128
 		}
 	}
 	mod.vertex_buffer();

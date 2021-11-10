@@ -1,9 +1,34 @@
 #map
 test.map
+//
 #player
-sprite base player 0 0 0
+-model:
+sprite
+-shader:
+base
+-texture:
+player
+-position:
+0 0 0
+//
 #obstacle
-sprite base player 1 -1.5 0
+-model:
+sprite
+-shader:
+base
+-texture:
+player
+-position:
+1.5 -1.5 0
+//
 #light
-cube light player 1 0 0
+-model:
+sprite
+-shader:
+light
+-texture:
+player
+-position:
+1 0 0
+-lightning:
 0.8 0.4 0.8 1 0.045 0.0075

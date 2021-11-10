@@ -140,17 +140,18 @@ int Model::load_obj(const char* path, bool loadBuf)
 	}
 	file.close();
 	ind_number = vertex_ind.size();
-	vertices = new float[vertex_ind.size() * 8];
+	vertices = new Vertex[vertex_ind.size()];
 	for (unsigned int i = 0; i < vertex_ind.size(); ++i)
 	{
-		vertices[i * 8] = vec_vertices[vertex_ind[i] - 1].x;
-		vertices[i * 8 + 1] = vec_vertices[vertex_ind[i] - 1].y;
-		vertices[i * 8 + 2] = vec_vertices[vertex_ind[i] - 1].z;
-		vertices[i * 8 + 3] = vec_uvs[uv_ind[i] - 1].x;
-		vertices[i * 8 + 4] = vec_uvs[uv_ind[i] - 1].y;
-		vertices[i * 8 + 5] = vec_normals[normal_ind[i] - 1].x;
-		vertices[i * 8 + 6] = vec_normals[normal_ind[i] - 1].y;
-		vertices[i * 8 + 7] = vec_normals[normal_ind[i] - 1].z;
+		vertices[i].pos[0] = vec_vertices[vertex_ind[i] - 1].x;
+		vertices[i].pos[1] = vec_vertices[vertex_ind[i] - 1].y;
+		vertices[i].pos[2] = vec_vertices[vertex_ind[i] - 1].z;
+		vertices[i].uv[0] = vec_uvs[uv_ind[i] - 1].x;
+		vertices[i].uv[1] = vec_uvs[uv_ind[i] - 1].y;
+		vertices[i].normal[0] = vec_normals[normal_ind[i] - 1].x;
+		vertices[i].normal[1] = vec_normals[normal_ind[i] - 1].y;
+		vertices[i].normal[2] = vec_normals[normal_ind[i] - 1].z;
+		vertices[i].id = 4;
 	}
 	if (loadBuf)
 		vertex_buffer();
@@ -165,20 +166,23 @@ void Model::vertex_buffer()
 	//glGenBuffers(1, &ibo);
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 8 * ind_number * sizeof(float), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 9 * ind_number * sizeof(float), vertices, GL_STATIC_DRAW);
 
 	/*glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ind_number * sizeof(float), indices, GL_STATIC_DRAW);*/
 
 	// position
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	// texture
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 	// normals
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(5 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	// entity id
+	glVertexAttribIPointer(3, 1, GL_INT, 9 * sizeof(float), (void*)(8 * sizeof(float)));
+	glEnableVertexAttribArray(3);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
