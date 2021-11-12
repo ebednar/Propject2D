@@ -29,7 +29,7 @@ void Render::init(projection_type type, float width, float height)
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-	create_shader(&screen_shader, "res/shaders/screen_vs.glsl", "res/shaders/screen_fs.glsl");
+	create_shader(&screen_shader, "res/shaders/screen.vert", "res/shaders/screen.frag");
 
 	create_framebuffer(width, height);
 
@@ -85,6 +85,13 @@ void Render::resize(float width, float height)
 
 void Render::draw(Scene* scene, Camera* camera, Skybox* skybox, bool is_edit_tilemap)
 {
+	if (!scene->is_loaded)
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
+		return;
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
@@ -101,10 +108,6 @@ void Render::draw_scene(Scene* scene, Camera* camera)
 	for (int i = 0; i < length; ++i)
 	{
 		Entity* ent = scene->ents[i];
-//#ifdef EDITOR
-//		if (ent == scene->target)
-//			continue ;
-//#endif
 		Model* mod = ent->mod;
 		Light* light = scene->point_lights[0];
 		glUseProgram(ent->material.shader_id);
@@ -145,10 +148,11 @@ void Render::draw_scene(Scene* scene, Camera* camera)
 void Render::draw_target(Scene* scene, Camera* camera)
 {
 	Entity* ent = scene->target;
-	Model* mod = ent->mod;
+	Model* mod = scene->model_atlas["sprite"];
 	Light* light = scene->point_lights[0];
-	glUseProgram(ent->material.shader_id);
-	glBindTexture(GL_TEXTURE_2D, ent->material.texture_id);
+	int shader = scene->shader_atlas["target"];
+	glUseProgram(shader);
+	glBindTexture(GL_TEXTURE_2D, scene->texture_atlas["target"].id);
 	glBindVertexArray(mod->vao);
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0xFF);
@@ -159,47 +163,16 @@ void Render::draw_target(Scene* scene, Camera* camera)
 	model = glm::rotate(model, glm::radians(ent->angle[2]), glm::vec3(0.0f, 0.0f, 1.0f));
 	model = glm::scale(model, ent->e_scale);
 
-	unsigned int model_loc = glGetUniformLocation(ent->material.shader_id, "u_M");
+	unsigned int model_loc = glGetUniformLocation(shader, "u_M");
 	glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
-	unsigned int view_loc = glGetUniformLocation(ent->material.shader_id, "u_V");
+	unsigned int view_loc = glGetUniformLocation(shader, "u_V");
 	glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(camera->view));
-	unsigned int proj_loc = glGetUniformLocation(ent->material.shader_id, "u_P");
+	unsigned int proj_loc = glGetUniformLocation(shader, "u_P");
 	glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
 
-	glUniform1i(glGetUniformLocation(ent->material.shader_id, "lightNumb"), 1);
-	glUniform3f(glGetUniformLocation(ent->material.shader_id, "lightPos"), light->position.x, light->position.y, light->position.z + 2.0f);
-	glUniform3f(glGetUniformLocation(ent->material.shader_id, "viewPos"), camera->pos.x, camera->pos.y, camera->pos.z);
-	glUniform1i(glGetUniformLocation(ent->material.shader_id, "material.diffuse"), 0);
-	glUniform3f(glGetUniformLocation(ent->material.shader_id, "material.specular"), 0.2f, 0.2f, 0.2f);
-	glUniform1f(glGetUniformLocation(ent->material.shader_id, "material.shininess"), 16.0f);
-	glUniform3f(glGetUniformLocation(ent->material.shader_id, "light.ambient"), 0.3f, 0.3f, 0.3f);
-	glUniform3f(glGetUniformLocation(ent->material.shader_id, "light.diffuse"), light->color[0], light->color[1], light->color[2]);
-	glUniform3f(glGetUniformLocation(ent->material.shader_id, "light.specular"), 0.4f, 0.4f, 0.4f);
-	glUniform1f(glGetUniformLocation(ent->material.shader_id, "light.constant"), light->constant);
-	glUniform1f(glGetUniformLocation(ent->material.shader_id, "light.linear"), light->linear);
-	glUniform1f(glGetUniformLocation(ent->material.shader_id, "light.quadratic"), light->quadratic);
+	glUniform1i(glGetUniformLocation(shader, "diffuse"), 0);
 
 	glDrawArrays(GL_TRIANGLES, 0, mod->ind_number);
-
-	int target_shader_id = scene->shader_atlas["target"];
-	glUseProgram(target_shader_id);
-	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
-	glStencilMask(0x00);
-	glDisable(GL_DEPTH_TEST);
-	model = glm::scale(model, glm::vec3(1.1f));
-
-	model_loc = glGetUniformLocation(target_shader_id, "u_M");
-	glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
-	view_loc = glGetUniformLocation(target_shader_id, "u_V");
-	glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(camera->view));
-	proj_loc = glGetUniformLocation(target_shader_id, "u_P");
-	glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(projection));
-
-	glDrawArrays(GL_TRIANGLES, 0, mod->ind_number);
-
-	glStencilMask(0xFF);
-	glStencilFunc(GL_ALWAYS, 0, 0xFF);
-	glEnable(GL_DEPTH_TEST);
 }
 
 void	Render::draw_tilemap(Scene* scene, Camera* camera)

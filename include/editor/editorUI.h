@@ -1,6 +1,7 @@
 #pragma once
 #include "scene.h"
 #include "camera.h"
+#include "editor/content_browser.h"
 
 struct GLFWwindow;
 
@@ -9,6 +10,7 @@ class EditorUI
 public:
 	bool	is_edit_tilemap = false;
 private:
+	ContentBrowser	browser;
 	std::map<int, std::string>	ent_types;
 	std::string	scene_path;
 	glm::mat4	projection;

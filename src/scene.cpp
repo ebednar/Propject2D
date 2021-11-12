@@ -6,13 +6,8 @@
 #include "glad.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "player.h"
-#include "obstacle.h"
-
-Scene::Scene()
-{
-	
-}
+#include "entity/player.h"
+#include "entity/obstacle.h"
 
 void	Scene::load_texture(std::string name, const char* path)
 {
@@ -22,7 +17,7 @@ void	Scene::load_texture(std::string name, const char* path)
 
 	unsigned char* text_data = stbi_load(path, &text_width, &text_height, &nrChannels, 0);
 	if (!text_data)
-		std::cout << "can't load texture file" << std::endl;
+		std::cout << path << " - can't load texture file" << std::endl;
 
 	unsigned int texture;
 	glGenTextures(1, &texture);
@@ -37,7 +32,9 @@ void	Scene::load_texture(std::string name, const char* path)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, text_width, text_height, 0, GL_RGB, GL_UNSIGNED_BYTE, text_data);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(text_data);
-	texture_atlas[name] = texture;
+	texture_atlas[name].id = texture;
+	texture_atlas[name].width = text_width;
+	texture_atlas[name].height = text_height;
 }
 
 int		Scene::load_resources(const char* path)
@@ -112,6 +109,7 @@ int		Scene::load_resources(const char* path)
 			}
 		}
 	}
+	int shader;
 	file.close();
 	return 0;
 }
@@ -122,7 +120,7 @@ int		Scene::load_map(const char* path)
 
 	std::cout << "load map " << path << std::endl;
 	tilemap.shader_id = shader_atlas["base"];
-	tilemap.texture_id = texture_atlas["tileset"];
+	tilemap.texture_id = texture_atlas["tileset"].id;
 	file.open(path);
 	if (not file.is_open())
 	{
@@ -259,7 +257,9 @@ void	Scene::place_ent(Entity* ent, std::string line, std::string data)
 	}
 	else if (line == "-texture:")
 	{
-		ent->material.set_texture(texture_atlas[data]);
+		ent->material.set_texture(texture_atlas[data].id);
+		ent->material.text_width = texture_atlas[data].width;
+		ent->material.text_height = texture_atlas[data].height;
 		ent->material.texture_name = data;
 	}
 	else if (line == "-position:")
@@ -281,6 +281,7 @@ void	Scene::place_ent(Entity* ent, std::string line, std::string data)
 			str += i;
 		}
 		ent->move(0.0f, 0.0f, std::stof(str));
+		//ent->scale(ent->material.text_width / 512.0f, ent->material.text_height / 512.0f, 1.0f);
 	}
 }
 
@@ -329,7 +330,7 @@ void	Scene::create_entity(entity_type type)
 		add_entity(obs);
 		obs->set_model(model_atlas["sprite"]);
 		obs->material.set_shader(shader_atlas["base"]);
-		obs->material.set_texture(texture_atlas["player"]);
+		obs->material.set_texture(texture_atlas["player"].id);
 		obs->type = entity_type::Obstacle;
 	}
 	else if (type == entity_type::Light)
@@ -338,7 +339,7 @@ void	Scene::create_entity(entity_type type)
 		add_entity(light);
 		light->set_model(model_atlas["sprite"]);
 		light->material.set_shader(shader_atlas["light"]);
-		light->material.set_texture(texture_atlas["player"]);
+		light->material.set_texture(texture_atlas["player"].id);
 		light->scale(0.1f, 0.1f, 0.1f);
 		light->type = entity_type::Light;
 		add_point_light(light);

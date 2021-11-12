@@ -19,7 +19,7 @@ base
 -texture:
 test1
 -position:
-1.5 -1.5 0
+4.45452 -1.67353 0
 //
 #obstacle
 -model:

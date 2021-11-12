@@ -1,4 +1,4 @@
-#include "player.h"
+#include "entity/player.h"
 
 void Player::update()
 {

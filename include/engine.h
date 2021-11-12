@@ -5,7 +5,7 @@
 #include "events.h"
 #include "skybox.h"
 #include "scene.h"
-#include "editorUI.h"
+#include "editor/editorUI.h"
 
 #define EDITOR
 

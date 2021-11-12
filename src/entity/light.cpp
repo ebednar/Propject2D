@@ -1,4 +1,4 @@
-#include "light.h"
+#include "entity/light.h"
 #include <iostream>
 
 void	Light::update()

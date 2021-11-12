@@ -11,7 +11,7 @@ static std::string load_shader(const char* filepath)
 	std::stringstream str;
 
 	if (data.fail())
-		std::cout << ".shader file not found" << std::endl;
+		std::cout << filepath << " - shader file not found" << std::endl;
 	while (std::getline(data, line))
 		str << line << '\n';
 	return str.str();

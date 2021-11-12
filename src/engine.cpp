@@ -49,10 +49,10 @@ void Engine::init_engine(const char* name, int width, int height)
 	events.yaw = camera.yaw;
 	events.pitch = camera.pitch;
 
-	render.init(projection_type::ortho, static_cast<float>(width), static_cast<float>(height));
+	render.init(projection_type::perspective, static_cast<float>(width), static_cast<float>(height));
 	
 	/*skybox.init();
-	skybox.set_shader("res/shaders/skybox_vert.glsl", "res/shaders/skybox_frag.glsl");*/
+	skybox.set_shader("res/shaders/skybox.vert", "res/shaders/skybox.frag");*/
 #ifdef EDITOR
 	editorUI.init(window, width, height);
 #endif
@@ -73,7 +73,7 @@ void Engine::run_engine()
 			fps_counter = 0;
 		}
 		old_time = glfwGetTime();
-		
+
 		scene.update_scene();
 
 		render.draw(&scene, &camera, &skybox, editorUI.is_edit_tilemap);

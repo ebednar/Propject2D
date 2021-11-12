@@ -2,9 +2,16 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "entity.h"
-#include "light.h"
+#include "entity/entity.h"
+#include "entity/light.h"
 #include "tilemap.h"
+
+struct Image
+{
+	unsigned int	id;
+	unsigned int	width;
+	unsigned int	height;
+};
 
 class Scene
 {
@@ -12,7 +19,7 @@ public:
 	Tilemap								tilemap;
 	std::map<std::string, Model*>		model_atlas;
 	std::map<std::string, int>			shader_atlas;
-	std::map<std::string, unsigned int>	texture_atlas;
+	std::map<std::string, Image>		texture_atlas;
 	std::vector<Entity*>				ents;
 	std::vector<Light*>					point_lights;
 	std::string							map_name = "";
@@ -23,7 +30,6 @@ public:
 	unsigned int						lights_numb = 0;
 	bool								is_loaded = false;
 public:
-	Scene();
 	int		load_scene(const char* path);
 	void	add_entity(Entity* ent);
 	void	create_entity(entity_type type);

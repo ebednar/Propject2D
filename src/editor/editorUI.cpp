@@ -1,4 +1,4 @@
-#include "editorUI.h"
+#include "editor/editorUI.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -58,7 +58,8 @@ void	EditorUI::draw(Scene* scene, int fps)
 				{
 					scene_path = filepath;
 					save_enable = true;
-					scene->close_scene();
+					if (scene->is_loaded)
+						scene->close_scene();
 					scene->load_scene(filepath.c_str());
 				}
 			}
@@ -71,6 +72,8 @@ void	EditorUI::draw(Scene* scene, int fps)
 			}
 			if (ImGui::MenuItem("Save as...", "Ctrl+Shift+S"))
 			{
+				std::string filepath_map = save_file(window, "Map file (*.map)\0*.map\0");
+				scene->map_name = filepath_map;
 				std::string filepath = save_file(window, "Scene file (*.scene)\0*.scene\0");
 				if (!filepath.empty())
 				{
@@ -85,11 +88,11 @@ void	EditorUI::draw(Scene* scene, int fps)
 	}
 
 	ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
-	if (ImGui::Begin("Test debug", &close))
+	if (ImGui::Begin("Main panel", &close))
 	{
 		ImGui::Text("fps: %d", fps);
-		ImGui::Text("entities number: %d", scene->ents_numb);
-		ImGui::Text("point lights number: %d", scene->lights_numb);
+		ImGui::Text("number of entities: %d", scene->ents_numb);
+		ImGui::Text("number of point lights: %d", scene->lights_numb);
 		if (ImGui::Button("Edit tilemap"))
 		{
 			is_edit_tilemap = true;
@@ -114,6 +117,8 @@ void	EditorUI::draw(Scene* scene, int fps)
 		}
 		ImGui::End();
 	}
+
+	browser.draw();
 }
 
 bool	EditorUI::choose_tile(Scene* scene, Camera* cam, int id)
@@ -147,7 +152,7 @@ bool	EditorUI::choose_ent_world_to_screen(Scene* scene, Camera* cam, float x, fl
 		glm::vec4 ent_screen = MVP * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 		ent_screen /= ent_screen.w;
 
-		glm::vec4 aabb = glm::vec4(ent->position.x + 0.5f, ent->position.y + 0.5f, 0.0f, 1.0f);
+		glm::vec4 aabb = glm::vec4(ent->position.x + 0.5f * ent->e_scale.x, ent->position.y + 0.5f * ent->e_scale.y, 0.0f, 1.0f);
 		aabb = projection * cam->view * aabb;
 		aabb /= aabb.w;
 

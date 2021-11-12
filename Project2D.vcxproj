@@ -95,6 +95,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\GLFW\lib-vc2019;$(SolutionDir)lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>freetype.lib;glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,6 +116,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\GLFW\lib-vc2019;$(SolutionDir)lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>freetype.lib;glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -129,6 +133,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\GLFW\lib-vc2019;$(SolutionDir)lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>freetype.lib;glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -148,6 +154,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(SolutionDir)lib\GLFW\lib-vc2019;$(SolutionDir)lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>freetype.lib;glfw3.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -161,9 +169,10 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="include\camera.h" />
-    <ClInclude Include="include\editorUI.h" />
+    <ClInclude Include="include\editor\content_browser.h" />
+    <ClInclude Include="include\editor\editorUI.h" />
     <ClInclude Include="include\engine.h" />
-    <ClInclude Include="include\entity.h" />
+    <ClInclude Include="include\entity\entity.h" />
     <ClInclude Include="include\events.h" />
     <ClInclude Include="include\freetype\config\ftconfig.h" />
     <ClInclude Include="include\freetype\config\ftheader.h" />
@@ -554,11 +563,11 @@
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
     <ClInclude Include="include\khrplatform.h" />
-    <ClInclude Include="include\light.h" />
+    <ClInclude Include="include\entity\light.h" />
     <ClInclude Include="include\material.h" />
     <ClInclude Include="include\model.h" />
-    <ClInclude Include="include\obstacle.h" />
-    <ClInclude Include="include\player.h" />
+    <ClInclude Include="include\entity\obstacle.h" />
+    <ClInclude Include="include\entity\player.h" />
     <ClInclude Include="include\render.h" />
     <ClInclude Include="include\sandbox.h" />
     <ClInclude Include="include\scene.h" />
@@ -713,9 +722,10 @@
   <ItemGroup>
     <ClCompile Include="include\glm\detail\glm.cpp" />
     <ClCompile Include="src\camera.cpp" />
-    <ClCompile Include="src\editorUI.cpp" />
+    <ClCompile Include="src\editor\content_browser.cpp" />
+    <ClCompile Include="src\editor\editorUI.cpp" />
     <ClCompile Include="src\engine.cpp" />
-    <ClCompile Include="src\entity.cpp" />
+    <ClCompile Include="src\entity\entity.cpp" />
     <ClCompile Include="src\events.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\imgui\imgui.cpp" />
@@ -724,12 +734,12 @@
     <ClCompile Include="src\imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="src\imgui\imgui_tables.cpp" />
     <ClCompile Include="src\imgui\imgui_widgets.cpp" />
-    <ClCompile Include="src\light.cpp" />
+    <ClCompile Include="src\entity\light.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\material.cpp" />
     <ClCompile Include="src\model.cpp" />
-    <ClCompile Include="src\obstacle.cpp" />
-    <ClCompile Include="src\player.cpp" />
+    <ClCompile Include="src\entity\obstacle.cpp" />
+    <ClCompile Include="src\entity\player.cpp" />
     <ClCompile Include="src\render.cpp" />
     <ClCompile Include="src\sandbox.cpp" />
     <ClCompile Include="src\scene.cpp" />
