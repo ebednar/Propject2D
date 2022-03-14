@@ -73,7 +73,7 @@ void	Tilemap::regenerate_map(Model* sprite_mod)
 			vertices[i * 6 + j].uv[1] = sprite_mod->vertices[j].uv[1] * 0.125 + 0.005 + tiles[i].id * 0.125; // uv.y    // 7  128
 		}
 	}
-	mod.vertex_buffer();
+	mod.update_vbo();
 }
 
 void	Tilemap::save_tilemap(std::string name)

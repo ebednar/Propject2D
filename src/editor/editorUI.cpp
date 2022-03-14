@@ -4,11 +4,11 @@
 #include "imgui_impl_opengl3.h"
 #include "glm/glm.hpp"
 #include <glm/gtc/matrix_transform.hpp>
-#include "win_dialog.h"
+#include "editor/win_dialog.h"
 
 #include <iostream>
 
-void	EditorUI::init(GLFWwindow* window, int width, int height)
+void	EditorUI::init(GLFWwindow* window, int width, int height, bool scene_loaded, std::string scene_path)
 {
 	this->window = window;
 	IMGUI_CHECKVERSION();
@@ -24,6 +24,10 @@ void	EditorUI::init(GLFWwindow* window, int width, int height)
 	ent_types[0] = "Player";
 	ent_types[1] = "Obstacle";
 	ent_types[2] = "Light";
+
+	save_enable = scene_loaded;
+	if (scene_loaded)
+		this->scene_path = scene_path;
 }
 
 void	EditorUI::start_frame()
@@ -34,7 +38,6 @@ void	EditorUI::start_frame()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
-
 }
 
 void	EditorUI::end_frame()
@@ -63,24 +66,17 @@ void	EditorUI::draw(Scene* scene, int fps)
 					scene->load_scene(filepath.c_str());
 				}
 			}
-			if (ImGui::MenuItem("Save", "Ctrl+S", false, save_enable))
+			if (ImGui::MenuItem("Save scene", NULL, false, save_enable))
 			{
-				if (!scene_path.empty())
-				{
-					scene->save_scene(scene_path.c_str());
-				}
+				save_scene(scene);
 			}
-			if (ImGui::MenuItem("Save as...", "Ctrl+Shift+S"))
+			if (ImGui::MenuItem("Save scene as...", NULL))
 			{
-				std::string filepath_map = save_file(window, "Map file (*.map)\0*.map\0");
-				scene->map_name = filepath_map;
-				std::string filepath = save_file(window, "Scene file (*.scene)\0*.scene\0");
-				if (!filepath.empty())
-				{
-					scene_path = filepath;
-					save_enable = true;
-					scene->save_scene(filepath.c_str());
-				}
+				save_scene_as(scene);
+			}
+			if (ImGui::MenuItem("Save map as...", NULL))
+			{
+				save_map_as(scene);
 			}
 			ImGui::EndMenu();
 		}
@@ -90,9 +86,10 @@ void	EditorUI::draw(Scene* scene, int fps)
 	ImGui::SetNextWindowSize(ImVec2(500, 440), ImGuiCond_FirstUseEver);
 	if (ImGui::Begin("Main panel", &close))
 	{
-		ImGui::Text("fps: %d", fps);
-		ImGui::Text("number of entities: %d", scene->ents_numb);
-		ImGui::Text("number of point lights: %d", scene->lights_numb);
+		ImGui::Text("FPS: %d", fps);
+		ImGui::Text("Tilemap: %s", scene->map_name.c_str());
+		ImGui::Text("Number of entities: %d", scene->ents_numb);
+		ImGui::Text("Number of point lights: %d", scene->lights_numb);
 		if (ImGui::Button("Edit tilemap"))
 		{
 			is_edit_tilemap = true;
@@ -117,8 +114,41 @@ void	EditorUI::draw(Scene* scene, int fps)
 		}
 		ImGui::End();
 	}
+}
 
-	browser.draw();
+void	EditorUI::save_scene(Scene* scene)
+{
+	scene->save_scene(scene_path.c_str());
+}
+
+void	EditorUI::save_scene_as(Scene* scene)
+{
+	save_map_as(scene);
+	std::string filepath = save_file(window, "Scene file (*.scene)\0*.scene\0");
+	if (!filepath.empty())
+	{
+		scene_path = filepath;
+		save_enable = true;
+		scene->save_scene(filepath.c_str());
+	}
+}
+
+void	EditorUI::save_map_as(Scene* scene)
+{
+	std::string filepath_map = save_file(window, "Map file (*.map)\0*.map\0");
+	if (!filepath_map.empty())
+	{
+		int i = 0, j = 0;
+		for (auto c : filepath_map)
+		{
+			if (c == '\\')
+				j = i;
+			i++;
+
+		}
+		scene->map_name = filepath_map.substr(j + 1, filepath_map.length() - j);
+		scene->tilemap.save_tilemap(scene->map_name);
+	}
 }
 
 bool	EditorUI::choose_tile(Scene* scene, Camera* cam, int id)
@@ -222,9 +252,33 @@ void	EditorUI::edit_target(Scene* scene)
 	ImGui::SameLine(107.0f);
 	ImGui::DragFloat("##Y_scale", &ent->e_scale.y, 0.1f);
 
+	ImGui::Text("SubText");
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.1f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.1f, 1.0f });
+	if (ImGui::Button("W##"))
+		ent->sub_width = 512.0f;
+	ImGui::PopStyleColor(3);
+	ImGui::SameLine(25.0f);
+	ImGui::PushItemWidth(50.0f);
+	ImGui::DragInt("##Width_drag", &ent->sub_width, 1.0f);
+
+	ImGui::SameLine(90.0f);
+	ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{ 0.1f, 0.8f, 0.1f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.2f, 0.9f, 0.2f, 1.0f });
+	ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.1f, 0.8f, 0.1f, 1.0f });
+	if (ImGui::Button("H##"))
+		ent->sub_height = 512.0f;
+	ImGui::PopStyleColor(3);
+	ImGui::SameLine(107.0f);
+	ImGui::DragInt("##Height_drag", &ent->sub_height, 1.0f);
+
 	if (ent->type == entity_type::Player)
 	{
-
+		ImGui::Text("Animation frames");
+		ImGui::DragInt("##frame_count", &ent->animator.current_animation->frame_count, 1.0f, 1, 10);
+		ImGui::Text("Animation duration");
+		ImGui::DragFloat("##duration", &ent->animator.current_animation->duration, 0.1f, 0.1f, 10.0f);
 	}
 	else if (ent->type == entity_type::Obstacle)
 	{
@@ -251,6 +305,8 @@ void	EditorUI::edit_target(Scene* scene)
 		scene->target = nullptr;
 	}
 	ImGui::End();
+
+	browser.draw(scene);
 }
 
 void	EditorUI::edit_tilemap(Scene* scene)

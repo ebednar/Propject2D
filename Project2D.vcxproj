@@ -89,6 +89,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)include\imgui;$(SolutionDir)include;$(SolutionDir)lib\GLFW\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,6 +109,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)include\imgui;$(SolutionDir)include;$(SolutionDir)lib\GLFW\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -127,6 +129,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)include\imgui;$(SolutionDir)include;$(SolutionDir)lib\GLFW\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,6 +149,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)include\imgui;$(SolutionDir)include;$(SolutionDir)lib\GLFW\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -168,6 +172,8 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="include\animation.h" />
+    <ClInclude Include="include\animator.h" />
     <ClInclude Include="include\camera.h" />
     <ClInclude Include="include\editor\content_browser.h" />
     <ClInclude Include="include\editor\editorUI.h" />
@@ -576,7 +582,7 @@
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\tilemap.h" />
     <ClInclude Include="include\ui_text.h" />
-    <ClInclude Include="include\win_dialog.h" />
+    <ClInclude Include="include\editor\win_dialog.h" />
     <ClInclude Include="lib\GLFW\include\GLFW\glfw3.h" />
     <ClInclude Include="lib\GLFW\include\GLFW\glfw3native.h" />
   </ItemGroup>
@@ -717,10 +723,11 @@
     <None Include="include\glm\gtx\vector_angle.inl" />
     <None Include="include\glm\gtx\vector_query.inl" />
     <None Include="include\glm\gtx\wrap.inl" />
-    <None Include="res\scene\test.scene" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glm\detail\glm.cpp" />
+    <ClCompile Include="src\animation.cpp" />
+    <ClCompile Include="src\animator.cpp" />
     <ClCompile Include="src\camera.cpp" />
     <ClCompile Include="src\editor\content_browser.cpp" />
     <ClCompile Include="src\editor\editorUI.cpp" />
@@ -740,14 +747,15 @@
     <ClCompile Include="src\model.cpp" />
     <ClCompile Include="src\entity\obstacle.cpp" />
     <ClCompile Include="src\entity\player.cpp" />
+    <ClCompile Include="src\scene\parse_ent_options.cpp" />
     <ClCompile Include="src\render.cpp" />
     <ClCompile Include="src\sandbox.cpp" />
-    <ClCompile Include="src\scene.cpp" />
+    <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\skybox.cpp" />
     <ClCompile Include="src\tilemap.cpp" />
     <ClCompile Include="src\ui_text.cpp" />
-    <ClCompile Include="src\win_dialog.cpp" />
+    <ClCompile Include="src\editor\win_dialog.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

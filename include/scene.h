@@ -36,12 +36,16 @@ public:
 	void	destroy_entity(Entity* ent);
 	void	add_point_light(Light* ent);
 	int		save_scene(const char* path);
+	void	awake_scene();
 	void	update_scene();
 	void	close_scene();
 private:
 	int		load_resources(const char* path);
 	int		load_map(const char* path);
 	void	load_texture(std::string name, const char* path);
-	void	place_ent(Entity* ent, std::string line, std::string data);
+	void	set_player(std::ifstream& file);
+	void	set_light(std::ifstream& file);
+	void	set_obstacle(std::ifstream& file);
+	void	parse_ent_options(Entity* ent, std::string line, std::string data);
 	void	read_light_info(Light* ent, std::string line, std::string data);
 };

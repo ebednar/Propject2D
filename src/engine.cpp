@@ -53,14 +53,18 @@ void Engine::init_engine(const char* name, int width, int height)
 	
 	/*skybox.init();
 	skybox.set_shader("res/shaders/skybox.vert", "res/shaders/skybox.frag");*/
-#ifdef EDITOR
-	editorUI.init(window, width, height);
-#endif
+
 }
 
 void Engine::run_engine()
 {
 	old_time = glfwGetTime();
+#ifdef EDITOR
+	editorUI.init(window, width, height, scene.is_loaded, "res/scene/test_saved.scene");
+#endif
+
+	scene.awake_scene();
+
 	while (!glfwWindowShouldClose(window))
 	{
 		delta_time = glfwGetTime() - old_time;

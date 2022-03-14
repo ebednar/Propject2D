@@ -1,8 +1,10 @@
 #pragma once
 
+class Scene;
+
 class ContentBrowser
 {
 public:
-	void	draw();
+	void	draw(Scene* scene);
 private:
 };

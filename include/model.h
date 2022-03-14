@@ -5,7 +5,7 @@ struct Vertex
 	float	pos[3];
 	float	uv[2];
 	float	normal[3];
-	int		id;
+	int		id = -1;
 };
 
 class Model
@@ -19,6 +19,9 @@ public:
 	unsigned int	vao;
 	unsigned int	ibo;
 public:
+	Model() = default;
+	Model(Model& mod) = default;
 	int		load_obj(const char *path, bool loadBuf);
 	void	vertex_buffer();
+	void	update_vbo();
 };

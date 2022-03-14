@@ -1254,7 +1254,7 @@
     <ClInclude Include="include\imgui\imstb_truetype.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\win_dialog.h">
+    <ClInclude Include="include\editor\win_dialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\entity\obstacle.h">
@@ -1273,6 +1273,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\editor\content_browser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\animator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -1685,7 +1691,6 @@
     <None Include="include\glm\gtx\wrap.inl">
       <Filter>Header Files</Filter>
     </None>
-    <None Include="res\scene\test.scene" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="include\glm\detail\glm.cpp">
@@ -1718,7 +1723,7 @@
     <ClCompile Include="src\sandbox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\scene.cpp">
+    <ClCompile Include="src\scene\scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\shader.cpp">
@@ -1751,7 +1756,7 @@
     <ClCompile Include="src\imgui\imgui_widgets.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\win_dialog.cpp">
+    <ClCompile Include="src\editor\win_dialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\entity\entity.cpp">
@@ -1770,6 +1775,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\editor\content_browser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\animation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scene\parse_ent_options.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

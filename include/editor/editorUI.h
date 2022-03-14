@@ -19,7 +19,7 @@ private:
 	int		height;
 	bool	save_enable = false;
 public:
-	void	init(GLFWwindow* window, int width, int height);
+	void	init(GLFWwindow* window, int width, int height, bool scene_loaded, std::string scene_path);
 	void	start_frame();
 	void	end_frame();
 	void	draw(Scene* scene, int fps);
@@ -31,4 +31,8 @@ public:
 	void	edit_target_tile(Scene* scene);
 	void	recalc_proj(int width, int height);
 	void	close();
+private:
+	void	save_scene(Scene* scene);
+	void	save_scene_as(Scene* scene);
+	void	save_map_as(Scene* scene);
 };

@@ -3,7 +3,7 @@
 #include "GLFW/glfw3.h"
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include "GLFW/glfw3native.h"
-#include "win_dialog.h"
+#include "editor/win_dialog.h"
 
 std::string	open_file(GLFWwindow* window, const char* filter)
 {

@@ -11,7 +11,7 @@ Camera::Camera()
 	up = glm::cross(direction,right);
 	view = glm::lookAt(pos, pos + front, up);
 	yaw = -90.0f;
-	pitch = 15.0f;
+	pitch = 0.0f;
 	speed = 1.0f;
 }
 
