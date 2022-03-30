@@ -185,7 +185,7 @@ void	Scene::set_player(std::ifstream& file)
 	player->set_subtexture(0, 0, 120, 80);
 	player->init_animations();
 	this->player = player;
-	player->events = events;
+	player->game_input = game_input;
 }
 
 void	Scene::set_light(std::ifstream& file)

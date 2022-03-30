@@ -78,3 +78,23 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 	events->height = height;
 	events->resize = true;
 }
+
+void	Events::process_input()
+{
+	game_input.axis_x = 0.0f;
+	game_input.axis_y = 0.0f;
+
+	if (keys[GLFW_KEY_W])
+		game_input.axis_y += 1.0f;
+	if (keys[GLFW_KEY_S])
+		game_input.axis_y -= 1.0f;
+	if (keys[GLFW_KEY_A])
+		game_input.axis_x -= 1.0f;
+	if (keys[GLFW_KEY_D])
+		game_input.axis_x += 1.0f;
+
+	game_input.button_up = keys[GLFW_KEY_UP];
+	game_input.button_down = keys[GLFW_KEY_DOWN];
+	game_input.button_right = keys[GLFW_KEY_RIGHT];
+	game_input.button_left = keys[GLFW_KEY_LEFT];
+}

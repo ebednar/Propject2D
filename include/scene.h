@@ -5,6 +5,7 @@
 #include "entity/light.h"
 #include "entity/player.h"
 #include "tilemap.h"
+#include "input.h"
 
 struct Image
 {
@@ -24,7 +25,7 @@ public:
 	std::vector<Light*>				point_lights;
 	std::string						map_name = "";
 	std::string						scene_name = "";
-	Events*							events = nullptr;
+	Input*							game_input = nullptr;
 	Entity*							target = nullptr;
 	Tile*							target_tile = nullptr;
 	Player*							player = nullptr;

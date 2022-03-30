@@ -20,6 +20,8 @@ struct Events
 	bool	l_hold = false;
 	bool	r_clicked = false;
 	bool	resize = false;
+
+	void	process_input();
 };
 
 void	key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);

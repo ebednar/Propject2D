@@ -2,12 +2,12 @@
 
 #include "entity/entity.h"
 
-class Events;
+struct Input;
 
 class Player : virtual public Entity
 {
 public:
-	Events*	events = nullptr;
+	Input*	game_input = nullptr;
 public:
 	Player() {};
 	~Player() {};
@@ -23,5 +23,5 @@ private:
 	void	move_player(float x, float y, float z);
 private:
 	state	current_state = state::Idle;
-	float	speed = 0.7f;
+	float	speed = 0.07f;
 };

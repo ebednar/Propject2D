@@ -91,7 +91,6 @@ void	Entity::set_subtexture(int xpad, int ypad, int width, int height)
 	mod->update_vbo();
 }
 
-
 void	Entity::init_animations()
 {
 	animator.init(material.text_width, material.text_height);

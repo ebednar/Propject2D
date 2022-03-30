@@ -2,8 +2,6 @@
 
 #include "entity/entity.h"
 
-class Events;
-
 class Npc : virtual public Entity
 {
 public:

@@ -50,7 +50,7 @@ void Engine::init_engine(const char* name, int width, int height)
 	events.pitch = camera.pitch;
 
 	render.init(projection_type::perspective, static_cast<float>(width), static_cast<float>(height));
-	scene.events = &this->events;
+	scene.game_input = &this->events.game_input;
 	/*skybox.init();
 	skybox.set_shader("res/shaders/skybox.vert", "res/shaders/skybox.frag");*/
 
@@ -123,6 +123,8 @@ void	 Engine::change_text(std::string str, int id)
 
 void	Engine::events_handling()
 {
+	events.process_input();
+
 	camera.speed = 8.0f * delta_time;
 	mouse_speed = 15.0f * delta_time;
 	scroll_speed = 20.0f * delta_time;

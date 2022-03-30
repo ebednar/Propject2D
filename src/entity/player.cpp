@@ -1,12 +1,12 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
-#include "events.h"
+#include "input.h"
 #include "entity/player.h"
 #include "glm/glm.hpp"
 
 #include <iostream>
 
-inline int direction(float n)
+static inline int direction(float n)
 {
 	if (n >= 0.0f)
 		return 1;
@@ -25,14 +25,8 @@ void	Player::update()
 
 	glm::vec3 movement(0.0f);
 
-	if (events->keys[GLFW_KEY_W])
-		movement += glm::vec3(0.0f, 0.1f * speed, 0.0f);
-	if (events->keys[GLFW_KEY_A])
-		movement += glm::vec3(-0.1f * speed, 0.0f, 0.0f);
-	if (events->keys[GLFW_KEY_S])
-		movement += glm::vec3(0.0f, -0.1f * speed, 0.0f);
-	if (events->keys[GLFW_KEY_D])
-		movement += glm::vec3(0.1f * speed, 0.0f, 0.0f);
+	movement += glm::vec3(game_input->axis_x * speed, 0.0f, 0.0f);
+	movement += glm::vec3(0.0f, game_input->axis_y * speed, 0.0f);
 
 	if (movement.x != 0.0f || movement.y != 0.0f)
 		move_player(movement.x, movement.y, movement.z);
@@ -68,7 +62,7 @@ void	Player::set_state(int new_state)
 void	Player::move_player(float x, float y, float z)
 {
 	move(x, y, z);
-	if (x)
+	if (x != 0)
 		scale(direction(x) * (float)sub_width / sub_height, 1.0f, 1.0f);
 	set_state(state::Walk);
 }
