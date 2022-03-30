@@ -5,7 +5,7 @@
 class Animator
 {
 public:
-	Animation	animations[2];
+	Animation	animations[3];
 	Animation*	current_animation = nullptr;
 	int		current_numb = 0;
 	int		total_numb = 2;

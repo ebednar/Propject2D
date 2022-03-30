@@ -2,10 +2,11 @@
 #include "model.h"
 #include <chrono>
 
-void Animation::init(int frame_count, int duration)
+void Animation::init(unsigned int texture_id, int frame_count, float duration)
 {
 	this->frame_count = frame_count;
 	this->duration = duration;
+	this->texture_id = texture_id;
 }
 
 void Animation::clear()

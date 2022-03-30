@@ -4,7 +4,6 @@ void	Animator::init(int x, int y)
 {
 	width = x;
 	height = y;
-	animations[1].init(3, 3);
 	set_animation(0);
 }
 

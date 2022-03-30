@@ -18,7 +18,3 @@ light.frag
 target
 simple_text.vert
 simple_text.frag
-#texture:
-//
-player
-11.png

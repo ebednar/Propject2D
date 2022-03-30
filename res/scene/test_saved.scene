@@ -7,15 +7,15 @@ sprite
 -shader:
 base
 -texture:
-p_run
+p_idle
 -position:
-0 0 0
+0.15 -0.05 0
 -subtexture size:
 120 80
 -animation idle:
 10 1
 -animation walk:
-10 1
+5 0.5
 //
 #obstacle
 -model:
@@ -29,7 +29,7 @@ base
 -subtexture size:
 512 512
 //
-#obstacle
+#npc
 -model:
 sprite
 -shader:

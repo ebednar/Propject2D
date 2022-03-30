@@ -1,7 +1,10 @@
 #pragma once
 
+#include "Input.h"
+
 struct Events
 {
+	Input	game_input;
 	float	last_x;
 	float	last_y;
 	float	yaw;

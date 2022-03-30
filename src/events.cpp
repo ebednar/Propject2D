@@ -1,7 +1,6 @@
 #define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 #include "events.h"
-#include <iostream>
 
 void	key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
@@ -9,7 +8,10 @@ void	key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
 	events = static_cast<Events*>(glfwGetWindowUserPointer(window));
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	{
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+		events->game_input.should_exit = true;
+	}
 	if (key >= 0 && key < 1024)
 	{
 		if (action == GLFW_PRESS)

@@ -50,20 +50,18 @@ void Engine::init_engine(const char* name, int width, int height)
 	events.pitch = camera.pitch;
 
 	render.init(projection_type::perspective, static_cast<float>(width), static_cast<float>(height));
-	
+	scene.events = &this->events;
 	/*skybox.init();
 	skybox.set_shader("res/shaders/skybox.vert", "res/shaders/skybox.frag");*/
 
+#ifdef EDITOR
+	editorUI.init(window, width, height, scene.is_loaded, "res/scene/test_saved.scene");
+#endif
 }
 
 void Engine::run_engine()
 {
 	old_time = glfwGetTime();
-#ifdef EDITOR
-	editorUI.init(window, width, height, scene.is_loaded, "res/scene/test_saved.scene");
-#endif
-
-	scene.awake_scene();
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -102,7 +100,11 @@ void Engine::run_engine()
 		if(close_eng)
 			glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
+
+#ifdef EDITOR
 	editorUI.close();
+#endif
+
 	scene.close_scene();
 	glfwDestroyWindow(window);
 	glfwTerminate();
@@ -181,9 +183,12 @@ void	Engine::events_handling()
 	{
 		width = events.width;
 		height = events.height;
-		render.resize(width, height);
-		editorUI.recalc_proj(width, height);
-		glViewport(0, 0, width, height);
+		if (width != 0.0f || height != 0.0f)
+		{
+			render.resize(width, height);
+			editorUI.recalc_proj(width, height);
+			glViewport(0, 0, width, height);
+		}
 		events.resize = false;
 	}
 

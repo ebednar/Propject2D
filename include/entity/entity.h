@@ -7,8 +7,16 @@
 enum class entity_type
 {
 	Player,
+	Npc,
 	Obstacle,
 	Light
+};
+
+enum class state
+{
+	Idle = 0,
+	Walk,
+	Attack
 };
 
 class Entity
@@ -22,6 +30,7 @@ public:
 	glm::vec3	angle = { 0.0f, 0.0f, 0.0f };
 	glm::mat4	MVP;
 	entity_type	type;
+	float		distance = 10.0f;
 	int			id;
 	int			sub_width = 512;
 	int			sub_height = 512;
@@ -36,8 +45,11 @@ public:
 	virtual void	scale(float x, float y, float z);
 	virtual void	awake() {};
 	virtual void	update() {};
+	void			update_dist(Entity* player);
+	virtual void	interact() {};
 	virtual void	play_animation() {};
-	void			init_animations();
 	virtual void	set_subtexture(int xpad = 0, int ypad = 0, int width = 512, int height = 512);
+	virtual	void	set_state(int new_state) {};
+	void			init_animations();
 private:
 };

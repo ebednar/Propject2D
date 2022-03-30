@@ -4,7 +4,8 @@
 
 struct Tile
 {
-	int id = 0;
+	int idx = 0;
+	int idy = 0;
 	int	x = 0;
 	int y = 0;;
 };

@@ -1,0 +1,54 @@
+#map
+test1.map
+//
+#player
+-model:
+sprite
+-shader:
+base
+-texture:
+p_idle
+-position:
+0.15 -0.05 0
+-subtexture size:
+120 80
+-animation idle:
+10 1
+-animation walk:
+5 0.5
+//
+#obstacle
+-model:
+sprite
+-shader:
+base
+-texture:
+11
+-position:
+1.72886 -1.25411 0
+-subtexture size:
+512 512
+//
+#obstacle
+-model:
+sprite
+-shader:
+base
+-texture:
+test1
+-position:
+0.0421211 -1.97682 0
+-subtexture size:
+512 512
+//
+#light
+-model:
+sprite
+-shader:
+light
+-texture:
+black_mage
+-position:
+1 0 0
+-lightning:
+0.8 0.4 0.8 1 0.045 0.0075

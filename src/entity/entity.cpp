@@ -1,6 +1,8 @@
 #include "entity/entity.h"
 #include "glm/glm.hpp"
 
+#include <math.h>
+
 Entity::Entity()
 {
 	move_to(0.0f, 0.0f, 0.0f);
@@ -93,4 +95,9 @@ void	Entity::set_subtexture(int xpad, int ypad, int width, int height)
 void	Entity::init_animations()
 {
 	animator.init(material.text_width, material.text_height);
+}
+
+void	Entity::update_dist(Entity* player)
+{
+	distance = fabs(sqrt(pow(player->position.x - position.x, 2.0) + pow(player->position.y - position.y, 2.0)));
 }

@@ -1,8 +1,29 @@
 #include "scene.h"
 
+void static	parse_animation(Entity* ent, std::string line, std::string data, unsigned int texture_id, int index)
+{
+	std::string str = "";
+	int count = 0;
+	int frame_count = 1;
+	for (auto i : data)
+	{
+		if (i == ' ')
+		{
+			if (count == 0)
+				frame_count = std::stoi(str);
+			count++;
+			str = "";
+			continue;
+		}
+		str += i;
+	}
+	float duration = std::stof(str);
+
+	ent->animator.animations[index].init(texture_id, frame_count, duration);
+}
+
 void	Scene::parse_ent_options(Entity* ent, std::string line, std::string data)
 {
-
 	if (line == "-model:")
 	{
 		ent->set_model(model_atlas[data]);
@@ -13,9 +34,7 @@ void	Scene::parse_ent_options(Entity* ent, std::string line, std::string data)
 	}
 	else if (line == "-texture:")
 	{
-		ent->material.set_texture(texture_atlas[data].id);
-		ent->material.text_width = texture_atlas[data].width;
-		ent->material.text_height = texture_atlas[data].height;
+		ent->material.set_texture(texture_atlas[data].id, texture_atlas[data].width, texture_atlas[data].height);
 		ent->material.texture_name = data;
 	}
 	else if (line == "-position:")
@@ -62,45 +81,11 @@ void	Scene::parse_ent_options(Entity* ent, std::string line, std::string data)
 	}
 	else if (line == "-animation idle:")
 	{
-		std::string str = "";
-		int count = 0;
-		int frame_count = 1;
-		for (auto i : data)
-		{
-			if (i == ' ')
-			{
-				if (count == 0)
-					frame_count = std::stoi(str);
-				count++;
-				str = "";
-				continue;
-			}
-			str += i;
-		}
-		int duration = std::stoi(str);
-
-		ent->animator.animations[0].init(frame_count, duration);
+		parse_animation(ent, line, data, texture_atlas["p_idle"].id, 0);
 	}
 	else if (line == "-animation walk:")
 	{
-		std::string str = "";
-		int count = 0;
-		int frame_count = 1;
-		for (auto i : data)
-		{
-			if (i == ' ')
-			{
-				if (count == 0)
-					frame_count = std::stoi(str);
-				count++;
-				str = "";
-				continue;
-			}
-			str += i;
-		}
-		int duration = std::stoi(str);
-
-		ent->animator.animations[1].init(frame_count, duration);
+		parse_animation(ent, line, data, texture_atlas["p_walk"].id, 1);
 	}
 }
 

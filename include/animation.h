@@ -14,7 +14,8 @@ struct Frame
 class Animation
 {
 public:
-	std::vector<Frame> frames;
+	std::vector<Frame>	frames;
+	unsigned int		texture_id = 0;
 	int		frame_count = 0;
 	int		xpad = 0;
 	int		ypad = 0;
@@ -23,7 +24,7 @@ public:
 	int		height = 80;
 	float	duration = 3.0f;
 	bool	frame_changed = false;
-	void	init(int frame_count, int duration);
+	void	init(unsigned int texture_id, int frame_count, float duration);
 	void	clear();
 	void	play();
 private:

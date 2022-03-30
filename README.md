@@ -1,1 +1,1 @@
-Small 2D Game using C++ and OpenGL
+Small 2D Engine using C++ and OpenGL

@@ -2,13 +2,13 @@
 #include <fstream>
 #include <sstream>
 #include <filesystem>
-#include "scene.h"
 #include "shader.h"
 #include "glad.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-#include "entity/player.h"
 #include "entity/obstacle.h"
+#include "entity/npc.h"
+#include "scene.h"
 
 void	Scene::load_texture(std::string name, const char* path)
 {
@@ -49,6 +49,7 @@ int		Scene::load_resources(const char* path)
 		std::cout << "resources file not found" << std::endl;
 		return 1;
 	}
+
 	std::string line;
 	while (std::getline(file, line))
 	{
@@ -75,7 +76,7 @@ int		Scene::load_resources(const char* path)
 		if (line == "#shaders:")
 		{
 			std::getline(file, line);
-			while (line != "#texture:")
+			while (line != "")
 			{
 				if (line == "//")
 				{
@@ -95,6 +96,7 @@ int		Scene::load_resources(const char* path)
 			}
 		}
 	}
+
 	for (auto& i : std::filesystem::directory_iterator("res/textures/"))
 	{
 		std::string str = i.path().filename().string();
@@ -102,9 +104,7 @@ int		Scene::load_resources(const char* path)
 		if (!i.is_directory())
 			load_texture(name, ("res/textures/" + str).c_str());
 	}
-
 	
-	int shader;
 	file.close();
 	return 0;
 }
@@ -115,7 +115,7 @@ int		Scene::load_map(const char* path)
 
 	std::cout << "load map " << path << std::endl;
 	tilemap.shader_id = shader_atlas["base"];
-	tilemap.texture_id = texture_atlas["tileset"].id;
+	tilemap.texture_id = texture_atlas["tilemap"].id;
 	file.open(path);
 	if (not file.is_open())
 	{
@@ -135,18 +135,24 @@ int		Scene::load_map(const char* path)
 		std::string str = "";
 		for (auto i : line)
 		{
-			if (i == ' ')
+			if (i == '/')
 			{
-				tilemap.tiles[y * tilemap.columns + x].id = std::stoi(str);
+				tilemap.tiles[y * tilemap.columns + x].idx = std::stoi(str);
+				str = "";
+			}
+			else if (i == ' ')
+			{
+				tilemap.tiles[y * tilemap.columns + x].idy = std::stoi(str);
 				tilemap.tiles[y * tilemap.columns + x].x = x;
 				tilemap.tiles[y * tilemap.columns + x].y = y;
 				str = "";
 				x++;
 				tilemap.tile_numb++;
 			}
-			str += i;
+			else
+				str += i;
 		}
-		tilemap.tiles[y * tilemap.columns + x].id = std::stoi(str);
+		tilemap.tiles[y * tilemap.columns + x].idy = std::stoi(str);
 		tilemap.tiles[y * tilemap.columns + x].x = x;
 		tilemap.tiles[y * tilemap.columns + x].y = y;
 		str = "";
@@ -178,6 +184,8 @@ void	Scene::set_player(std::ifstream& file)
 	}
 	player->set_subtexture(0, 0, 120, 80);
 	player->init_animations();
+	this->player = player;
+	player->events = events;
 }
 
 void	Scene::set_light(std::ifstream& file)
@@ -219,6 +227,24 @@ void	Scene::set_obstacle(std::ifstream& file)
 	}
 }
 
+void	Scene::set_npc(std::ifstream& file)
+{
+	std::string line;
+
+	Npc* npc = new Npc();
+
+	add_entity(npc);
+	npc->type = entity_type::Npc;
+	std::getline(file, line);
+	while (line != "" && line != "//")
+	{
+		std::string data;
+		std::getline(file, data);
+		parse_ent_options(npc, line, data);
+		std::getline(file, line);
+	}
+}
+
 int		Scene::load_scene(const char* path)
 {
 	std::ifstream	file;
@@ -247,6 +273,10 @@ int		Scene::load_scene(const char* path)
 		{
 			set_player(file);
 		}
+		else if (line == "#npc")
+		{
+			set_npc(file);
+		}
 		else if (line == "#obstacle")
 		{
 			set_obstacle(file);
@@ -258,6 +288,8 @@ int		Scene::load_scene(const char* path)
 	}
 	file.close();
 	
+	awake_scene();
+
 	target = nullptr;
 	is_loaded = true;
 	return 0;
@@ -272,25 +304,34 @@ void	Scene::add_entity(Entity* ent_ptr)
 
 void	Scene::create_entity(entity_type type)
 {
-	if (type == entity_type::Obstacle)
-	{
-		Obstacle* obs = new Obstacle();
-		add_entity(obs);
-		obs->set_model(model_atlas["sprite"]);
-		obs->material.set_shader(shader_atlas["base"]);
-		obs->material.set_texture(texture_atlas["black_mage"].id);
-		obs->type = entity_type::Obstacle;
-	}
-	else if (type == entity_type::Light)
+	if (type == entity_type::Light)
 	{
 		Light* light = new Light();
 		add_entity(light);
 		light->set_model(model_atlas["sprite"]);
 		light->material.set_shader(shader_atlas["light"]);
-		light->material.set_texture(texture_atlas["black_mage"].id);
+		light->material.set_texture(texture_atlas["black_mage"].id, 512, 512);
 		light->scale(0.1f, 0.1f, 0.1f);
 		light->type = entity_type::Light;
 		add_point_light(light);
+	}
+	else
+	{
+		Entity* ent = nullptr;
+		if (type == entity_type::Npc)
+		{
+			ent = new Npc();
+			ent->type = entity_type::Npc;
+		}
+		else // Obstacle
+		{
+			ent = new Obstacle();	
+			ent->type = entity_type::Obstacle;
+		}
+		add_entity(ent);
+		ent->set_model(model_atlas["sprite"]);
+		ent->material.set_shader(shader_atlas["base"]);
+		ent->material.set_texture(texture_atlas["black_mage"].id, 512, 512);
 	}
 }
 void	Scene::add_point_light(Light* ent_ptr)
@@ -298,50 +339,6 @@ void	Scene::add_point_light(Light* ent_ptr)
 	point_lights.push_back(ent_ptr);
 	lights_numb++;
 }
-
-static void	print_entity_info_in_file(const Entity* ent, std::stringstream& out)
-{
-	out << "-model:\nsprite\n-shader:\nbase\n-texture:\n" << ent->material.texture_name << "\n-position:\n" << ent->position.x << ' ' << ent->position.y << ' ' << ent->position.z << "\n-subtexture size:\n" << ent->sub_width << ' ' << ent->sub_height << '\n';
-}
-
-int		Scene::save_scene(const char* path)
-{
-	std::stringstream out;
-	std::cout << "saving scene " << path << std::endl;
-
-	tilemap.save_tilemap(map_name);
-	out << "#map\n" << map_name << '\n';
-	for (Entity* ent : ents)
-	{
-		if (ent->type == entity_type::Player)
-		{
-			out << "//\n#player\n";
-			print_entity_info_in_file(ent, out);
-		}
-		else if (ent->type == entity_type::Obstacle)
-		{
-			out << "//\n#obstacle\n";
-			print_entity_info_in_file(ent, out);
-		}
-		else if (ent->type == entity_type::Light)
-		{
-			out << "//\n#light\n";
-			out << "-model:\nsprite\n-shader:\nlight\n-texture:\n" << ent->material.texture_name << "\n-position:\n" << ent->position.x << ' ' << ent->position.y << ' ' << ent->position.z << '\n';
-			
-			for (Light* light : point_lights)
-				if (ent->id == light->id)
-				{
-					out << "-lightning:\n" << light->color[0] << ' ' << light->color[1] << ' ' << light->color[2] << ' ' << light->constant << ' ' << light->linear << ' ' << light->quadratic << '\n';
-					break;
-				}
-		}
-	}
-
-	std::ofstream	file(path);
-	file << out.str();
-	file.close();
-	return 0;
-};
 
 void	Scene::awake_scene()
 {
@@ -355,6 +352,7 @@ void	Scene::update_scene()
 {
 	for (Entity* ent : ents)
 	{
+		ent->update_dist(player);
 		ent->play_animation();
 		ent->update();
 	}
@@ -393,6 +391,12 @@ void	Scene::close_scene()
 void	Scene::destroy_entity(Entity* ent)
 {
 	if (ent->type == entity_type::Light)
+	{
+		if (lights_numb == 1)
+		{
+			std::cout << "can not delete the last light source" << std::endl;
+			return;
+		}
 		for (int i = 0; i < lights_numb; ++i)
 		{
 			if (point_lights[i]->id == ent->id)
@@ -401,6 +405,7 @@ void	Scene::destroy_entity(Entity* ent)
 				break;
 			}
 		}
+	}
 	for (int i = 0; i < ents_numb; ++i)
 	{
 		if (ents[i]->id == ent->id)

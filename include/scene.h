@@ -1,9 +1,9 @@
 #pragma once
 #include <vector>
-#include <string>
 #include <map>
 #include "entity/entity.h"
 #include "entity/light.h"
+#include "entity/player.h"
 #include "tilemap.h"
 
 struct Image
@@ -16,19 +16,21 @@ struct Image
 class Scene
 {
 public:
-	Tilemap								tilemap;
-	std::map<std::string, Model*>		model_atlas;
-	std::map<std::string, int>			shader_atlas;
-	std::map<std::string, Image>		texture_atlas;
-	std::vector<Entity*>				ents;
-	std::vector<Light*>					point_lights;
-	std::string							map_name = "";
-	std::string							scene_name = "";
-	Entity*								target = nullptr;
-	Tile*								target_tile = nullptr;
-	unsigned int						ents_numb = 0;
-	unsigned int						lights_numb = 0;
-	bool								is_loaded = false;
+	Tilemap							tilemap;
+	std::map<std::string, Model*>	model_atlas;
+	std::map<std::string, int>		shader_atlas;
+	std::map<std::string, Image>	texture_atlas;
+	std::vector<Entity*>			ents;
+	std::vector<Light*>				point_lights;
+	std::string						map_name = "";
+	std::string						scene_name = "";
+	Events*							events = nullptr;
+	Entity*							target = nullptr;
+	Tile*							target_tile = nullptr;
+	Player*							player = nullptr;
+	unsigned int					ents_numb = 0;
+	unsigned int					lights_numb = 0;
+	bool							is_loaded = false;
 public:
 	int		load_scene(const char* path);
 	void	add_entity(Entity* ent);
@@ -46,6 +48,7 @@ private:
 	void	set_player(std::ifstream& file);
 	void	set_light(std::ifstream& file);
 	void	set_obstacle(std::ifstream& file);
+	void	set_npc(std::ifstream& file);
 	void	parse_ent_options(Entity* ent, std::string line, std::string data);
 	void	read_light_info(Light* ent, std::string line, std::string data);
 };

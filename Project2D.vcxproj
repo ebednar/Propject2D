@@ -179,6 +179,7 @@
     <ClInclude Include="include\editor\editorUI.h" />
     <ClInclude Include="include\engine.h" />
     <ClInclude Include="include\entity\entity.h" />
+    <ClInclude Include="include\entity\npc.h" />
     <ClInclude Include="include\events.h" />
     <ClInclude Include="include\freetype\config\ftconfig.h" />
     <ClInclude Include="include\freetype\config\ftheader.h" />
@@ -568,6 +569,7 @@
     <ClInclude Include="include\imgui\imstb_rectpack.h" />
     <ClInclude Include="include\imgui\imstb_textedit.h" />
     <ClInclude Include="include\imgui\imstb_truetype.h" />
+    <ClInclude Include="include\Input.h" />
     <ClInclude Include="include\khrplatform.h" />
     <ClInclude Include="include\entity\light.h" />
     <ClInclude Include="include\material.h" />
@@ -733,8 +735,9 @@
     <ClCompile Include="src\editor\editorUI.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\entity\entity.cpp" />
+    <ClCompile Include="src\entity\npc.cpp" />
     <ClCompile Include="src\events.cpp" />
-    <ClCompile Include="src\glad.c" />
+    <ClCompile Include="src\glad\glad.c" />
     <ClCompile Include="src\imgui\imgui.cpp" />
     <ClCompile Include="src\imgui\imgui_draw.cpp" />
     <ClCompile Include="src\imgui\imgui_impl_glfw.cpp" />
@@ -750,6 +753,7 @@
     <ClCompile Include="src\scene\parse_ent_options.cpp" />
     <ClCompile Include="src\render.cpp" />
     <ClCompile Include="src\sandbox.cpp" />
+    <ClCompile Include="src\scene\save_scene.cpp" />
     <ClCompile Include="src\scene\scene.cpp" />
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\skybox.cpp" />

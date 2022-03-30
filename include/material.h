@@ -16,5 +16,6 @@ public:
 	void	load_material(char* path);
 	void	load_material(float albedo[3], float ao, float metallic, float roughness);
 	void	set_shader(int shader);
+	void	set_texture(unsigned int texture, int width, int height);
 	void	set_texture(unsigned int texture);
 };

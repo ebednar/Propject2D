@@ -275,6 +275,8 @@ void	EditorUI::edit_target(Scene* scene)
 
 	if (ent->type == entity_type::Player)
 	{
+		std::string str = "Animation number " + std::to_string(ent->animator.current_numb);
+		ImGui::Text(str.c_str());
 		ImGui::Text("Animation frames");
 		ImGui::DragInt("##frame_count", &ent->animator.current_animation->frame_count, 1.0f, 1, 10);
 		ImGui::Text("Animation duration");
@@ -335,7 +337,8 @@ void	EditorUI::edit_target_tile(Scene* scene)
 	if (!scene->target_tile)
 		return ;
 	ImGui::Begin("Tile editor");
-	ImGui::InputInt("Id", &scene->target_tile->id, 1);
+	ImGui::InputInt("Idx", &scene->target_tile->idx, 1);
+	ImGui::InputInt("Idy", &scene->target_tile->idy, 1);
 	ImGui::End();
 }
 
