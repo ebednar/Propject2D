@@ -75,7 +75,9 @@ void	Scene::parse_ent_options(Entity* ent, std::string line, std::string data)
 		}
 		ent->sub_height = std::stoi(str);
 
+
 		// TODO: scale to 512
+		
 		//ent->scale(ent->sub_width / 512.0f, ent->sub_height / 512.0f, 1.0f);
 		//ent->scale(ent->material.text_width / 512.0f, ent->material.text_height / 512.0f, 1.0f);
 	}

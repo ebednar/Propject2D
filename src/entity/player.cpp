@@ -21,15 +21,28 @@ void	Player::awake()
 
 void	Player::update()
 {
-	set_state(state::Idle);
+	if (game_input->button_interact.is_down && game_input->button_interact.transition)
+	{
+		int length = others->size();
+		for (int i = 0; i < length; ++i)
+		{
+			Entity* other = others->at(i);
+			if (other->distance < 1.0f)
+				other->interact();
+		}
+	}
 
-	glm::vec3 movement(0.0f);
+	// movement
+	{
+		set_state(state::Idle);
+		glm::vec3 movement(0.0f);
 
-	movement += glm::vec3(game_input->axis_x * speed, 0.0f, 0.0f);
-	movement += glm::vec3(0.0f, game_input->axis_y * speed, 0.0f);
+		movement += glm::vec3(game_input->axis_x * speed * Input::delta_time, 0.0f, 0.0f);
+		movement += glm::vec3(0.0f, game_input->axis_y * speed * Input::delta_time, 0.0f);
 
-	if (movement.x != 0.0f || movement.y != 0.0f)
-		move_player(movement.x, movement.y, movement.z);
+		if (movement.x != 0.0f || movement.y != 0.0f)
+			move_player(movement.x, movement.y, movement.z);
+	}
 }
 
 void	Player::play_animation()

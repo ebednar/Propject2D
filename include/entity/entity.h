@@ -38,18 +38,18 @@ public:
 	Entity();
 	virtual ~Entity();
 	virtual void	set_model(Model *mod);
+	virtual void	set_subtexture(int xpad = 0, int ypad = 0, int width = 512, int height = 512);
 	virtual void	move(float x, float y, float z);
 	virtual void	move_to(float x, float y, float z);
 	virtual void	rotate(float x, float y, float z);
 	virtual void	rotate_to(float x, float y, float z);
 	virtual void	scale(float x, float y, float z);
+	void			init_animations();
 	virtual void	awake() {};
 	virtual void	update() {};
-	void			update_dist(Entity* player);
-	virtual void	interact() {};
 	virtual void	play_animation() {};
-	virtual void	set_subtexture(int xpad = 0, int ypad = 0, int width = 512, int height = 512);
+	void			update_dist(Entity* player);
 	virtual	void	set_state(int new_state) {};
-	void			init_animations();
+	virtual void	interact() {};
 private:
 };

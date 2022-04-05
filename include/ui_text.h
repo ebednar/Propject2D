@@ -4,6 +4,13 @@
 #include <map>
 #include <string>
 
+enum Slot
+{
+    Dialog,
+    NearBackgrong,
+    FarBackground
+};
+
 struct vec2
 {
     float x;
@@ -16,6 +23,7 @@ struct text_t
     float       x;
     float       y;
     float       scale;
+    bool        enable = false;
     text_t(std::string str = " ", float x = 0.0f, float y = 0.0f, float scale = 1.0f) : str(str), x(x), y(y), scale(scale) {}
 };
 
@@ -26,20 +34,23 @@ struct character {
     unsigned int    advance;    // Offset to advance to next glyph
 };
 
-
-class ui_text
+class Ui_text
 {
 public:
-    FT_Library ft;
-    std::map<char, character> characters;
+    FT_Library      ft;
+    std::map<char, character>   characters;
+    text_t          text_to_draw[5];
     unsigned int	vbo;
     unsigned int	vao;
     unsigned int	ibo;
-    unsigned int	texture;
+    unsigned int	texture_id;
     int				shader_id;
 public:
     int     init();
+    void	add_text_ui(std::string str, Slot slot, float x, float y, float scale);
+private:
+    int     counter = 0;
+private:
     void    set_shader(const char* vPath, const char* fSPath);
     void    vertex_buffer();
-private:
 };

@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <chrono>
 
 class Model;
 
@@ -23,6 +24,7 @@ public:
 	int		width = 120;
 	int		height = 80;
 	float	duration = 3.0f;
+	std::chrono::steady_clock::time_point	start_time;
 	bool	frame_changed = false;
 	void	init(unsigned int texture_id, int frame_count, float duration);
 	void	clear();

@@ -28,6 +28,8 @@ base
 1.72886 -1.25411 0
 -subtexture size:
 512 512
+-animation idle:
+10 1
 //
 #npc
 -model:
@@ -35,11 +37,15 @@ sprite
 -shader:
 base
 -texture:
-test1
+p_idle
 -position:
 0.0421211 -1.97682 0
 -subtexture size:
-512 512
+120 80
+-animation idle:
+10 1
+-animation walk:
+5 0.5
 //
 #light
 -model:

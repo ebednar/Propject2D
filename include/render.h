@@ -28,6 +28,10 @@ public:
 	void	draw(Scene* scene, Camera* camera, Skybox* skybox, bool is_edit_tilemap = false);
 	void	draw_target(Scene* scene, Camera* camera);
 	int		read_pixel(int x, int y);
+	void	draw_ui(Ui_text* texter);
+private:
+	float	width;
+	float	height;
 private:
 	void	create_framebuffer(float width, float height);
 	void	draw_scene(Scene* scene, Camera* camera);

@@ -7,6 +7,8 @@
 #include "tilemap.h"
 #include "input.h"
 
+class Ui_text;
+
 struct Image
 {
 	unsigned int	id;
@@ -26,6 +28,7 @@ public:
 	std::string						map_name = "";
 	std::string						scene_name = "";
 	Input*							game_input = nullptr;
+	Ui_text*						texter;
 	Entity*							target = nullptr;
 	Tile*							target_tile = nullptr;
 	Player*							player = nullptr;

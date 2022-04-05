@@ -34,6 +34,8 @@ void Render::init(projection_type type, float width, float height)
 	create_framebuffer(width, height);
 
 	proj_type = type;
+	this->width = width;
+	this->height = height;
 
 	if (type == projection_type::perspective)
 		projection = glm::perspective(glm::radians(70.0f), width / height, 0.1f, 100.0f);
@@ -240,6 +242,53 @@ void	Render::draw_skybox(Skybox *skybox, Camera* camera)
 	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox->texture);
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 	glDepthMask(GL_TRUE);
+}
+
+void Render::draw_ui(Ui_text* texter)
+{
+	auto ortProjection = glm::ortho(0.0f, width, 0.0f, height);
+
+	glUseProgram(texter->shader_id);
+	glBindTexture(GL_TEXTURE_2D, texter->texture_id);
+	unsigned int proj_loc = glGetUniformLocation(texter->shader_id, "u_P");
+	glUniformMatrix4fv(proj_loc, 1, GL_FALSE, glm::value_ptr(ortProjection));
+	glUniform3f(glGetUniformLocation(texter->shader_id, "textColor"), 1.0f, 1.0f, 1.0f);
+	glActiveTexture(GL_TEXTURE0);
+	glBindVertexArray(texter->vao);
+	int length = 5;
+	for (int i = 0; i < length; ++i)
+	{
+		text_t* txt = &texter->text_to_draw[i];
+		int x = txt->x;
+		std::string::const_iterator c;
+		for (c = txt->str.begin(); c != txt->str.end(); ++c)
+		{
+			character ch = texter->characters[*c];
+			float xpos = x + ch.bearing.x * txt->scale;
+			float ypos = txt->y - (ch.size.y - ch.bearing.y) * txt->scale;
+
+			float w = ch.size.x * txt->scale;
+			float h = ch.size.y * txt->scale;
+
+			float vertices[6][4] = {
+				{ xpos,     ypos + h,   0.0f, 0.0f },
+				{ xpos,     ypos,       0.0f, 1.0f },
+				{ xpos + w, ypos,       1.0f, 1.0f },
+
+				{ xpos,     ypos + h,   0.0f, 0.0f },
+				{ xpos + w, ypos,       1.0f, 1.0f },
+				{ xpos + w, ypos + h,   1.0f, 0.0f }
+			};
+			glBindTexture(GL_TEXTURE_2D, ch.textureID);
+			glBindBuffer(GL_ARRAY_BUFFER, texter->vbo);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glDrawArrays(GL_TRIANGLES, 0, 6);
+			x += (ch.advance >> 6) * txt->scale;
+		}
+	}
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 int		Render::read_pixel(int x, int y)

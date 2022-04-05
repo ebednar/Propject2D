@@ -22,12 +22,26 @@ void	EditorUI::init(GLFWwindow* window, int width, int height, bool scene_loaded
 	this->height = height;
 
 	ent_types[0] = "Player";
-	ent_types[1] = "Obstacle";
-	ent_types[2] = "Light";
+	ent_types[1] = "Npc";
+	ent_types[2] = "Obstacle";
+	ent_types[3] = "Light";
 
 	save_enable = scene_loaded;
 	if (scene_loaded)
 		this->scene_path = scene_path;
+}
+
+void	EditorUI::process_frame(Scene* scene, int fps)
+{
+	start_frame();
+	edit_target(scene);
+	edit_target_tile(scene);
+	draw(scene, fps);
+	if (is_edit_tilemap)
+	{
+		edit_tilemap(scene);
+	}
+	end_frame();
 }
 
 void	EditorUI::start_frame()

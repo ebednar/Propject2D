@@ -9,6 +9,8 @@ Engine::~Engine()
 
 void Engine::init_engine(const char* name, int width, int height)
 {
+	game_timer.set_start_point();
+
 	if (!glfwInit())
 		exit(EXIT_FAILURE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -49,14 +51,23 @@ void Engine::init_engine(const char* name, int width, int height)
 	events.yaw = camera.yaw;
 	events.pitch = camera.pitch;
 
-	render.init(projection_type::perspective, static_cast<float>(width), static_cast<float>(height));
+	render.init(projection_type::ortho, static_cast<float>(width), static_cast<float>(height));
 	scene.game_input = &this->events.game_input;
+	scene.texter = &this->texter;
+
+	texter.init();
+	texter.add_text_ui("Why are you here?", NearBackgrong, width / 2 + 70, height - 60, 0.5f);
+	texter.add_text_ui("It's you again..", FarBackground, 370, height / 2 - 20, 0.4f);
+
 	/*skybox.init();
 	skybox.set_shader("res/shaders/skybox.vert", "res/shaders/skybox.frag");*/
 
 #ifdef EDITOR
 	editorUI.init(window, width, height, scene.is_loaded, "res/scene/test_saved.scene");
 #endif
+
+	std::cout << "Loading time: ";
+	game_timer.get_time_point();
 }
 
 void Engine::run_engine()
@@ -65,8 +76,25 @@ void Engine::run_engine()
 
 	while (!glfwWindowShouldClose(window))
 	{
-		delta_time = glfwGetTime() - old_time;
-		timer += delta_time;
+		scene.update_scene();
+
+		render.draw(&scene, &camera, &skybox, editorUI.is_edit_tilemap);
+		render.draw_ui(&texter);
+
+	#ifdef EDITOR
+		if (scene.target)
+			render.draw_target(&scene, &camera);
+		editorUI.process_frame(&scene, fps);
+	#endif // EDITOR
+
+		events_handling();
+		glfwSwapBuffers(window);
+		glfwPollEvents();
+		if(close_eng)
+			glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+		Input::delta_time = glfwGetTime() - old_time;
+		timer += Input::delta_time;
 		fps_counter++;
 		if (timer >= 1.0)
 		{
@@ -75,30 +103,6 @@ void Engine::run_engine()
 			fps_counter = 0;
 		}
 		old_time = glfwGetTime();
-
-		scene.update_scene();
-
-		render.draw(&scene, &camera, &skybox, editorUI.is_edit_tilemap);
-
-	#ifdef EDITOR
-		if (scene.target)
-			render.draw_target(&scene, &camera);
-		editorUI.start_frame();
-		editorUI.edit_target(&scene);
-		editorUI.edit_target_tile(&scene);
-		editorUI.draw(&scene, fps);
-		if (editorUI.is_edit_tilemap)
-		{
-			editorUI.edit_tilemap(&scene);
-		}
-		editorUI.end_frame();
-	#endif // EDITOR
-
-		events_handling();
-		glfwSwapBuffers(window);
-		glfwPollEvents();
-		if(close_eng)
-			glfwSetWindowShouldClose(window, GLFW_TRUE);
 	}
 
 #ifdef EDITOR
@@ -110,24 +114,13 @@ void Engine::run_engine()
 	glfwTerminate();
 }
 
-void	 Engine::add_text_ui(std::string str, float x, float y, float scale)
-{
-	text_t *txt = new text_t(str, x, y, scale);
-	text.push_back(txt);
-}
-
-void	 Engine::change_text(std::string str, int id)
-{
-	text[id]->str = str;
-}
-
 void	Engine::events_handling()
 {
 	events.process_input();
 
-	camera.speed = 8.0f * delta_time;
-	mouse_speed = 15.0f * delta_time;
-	scroll_speed = 20.0f * delta_time;
+	camera.speed = 8.0f * Input::delta_time;
+	mouse_speed = 15.0f * Input::delta_time;
+	scroll_speed = 20.0f * Input::delta_time;
 
 #ifdef EDITOR
 

@@ -6,6 +6,7 @@
 #include "skybox.h"
 #include "scene.h"
 #include "editor/editorUI.h"
+#include "timer.h"
 
 #define EDITOR
 
@@ -15,9 +16,8 @@ public:
 	Scene						scene;
 	Events						events;
 	Skybox						skybox;
+	Timer						game_timer;
 	EditorUI					editorUI;
-	std::vector<text_t*>		text;
-	double						delta_time = 0.0;
 	bool						close_eng = false;
 public:
 			~Engine();
@@ -28,7 +28,7 @@ public:
 private:
 	GLFWwindow				*window;
 	Render					render;
-	ui_text					texter;
+	Ui_text					texter;
 	double					old_time = 0.0;
 	double					timer = 0.0;
 	float					mouse_speed = 0.0f;

@@ -3,7 +3,7 @@
 #include <glad.h>
 #include "shader.h"
 
-int ui_text::init()
+int Ui_text::init()
 {
     if (FT_Init_FreeType(&ft))
     {
@@ -26,8 +26,8 @@ int ui_text::init()
             std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
             continue;
         }
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
+        glGenTextures(1, &texture_id);
+        glBindTexture(GL_TEXTURE_2D, texture_id);
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
@@ -46,7 +46,7 @@ int ui_text::init()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         // now store character for later use
         character charact = {
-            texture,
+            texture_id,
             {face->glyph->bitmap.width, face->glyph->bitmap.rows},
             {face->glyph->bitmap_left, face->glyph->bitmap_top},
             face->glyph->advance.x
@@ -56,14 +56,18 @@ int ui_text::init()
     glBindTexture(GL_TEXTURE_2D, 0);
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
+
+    set_shader("res/shaders/ui_text.vert", "res/shaders/ui_text.frag");
+
+    vertex_buffer();
 }
 
-void    ui_text::set_shader(const char* vPath, const char* fSPath)
+void    Ui_text::set_shader(const char* vPath, const char* fSPath)
 {
     create_shader(&shader_id, vPath, fSPath);
 }
 
-void    ui_text::vertex_buffer()
+void    Ui_text::vertex_buffer()
 {
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
@@ -74,4 +78,15 @@ void    ui_text::vertex_buffer()
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+}
+
+void	 Ui_text::add_text_ui(std::string str, Slot slot, float x, float y, float scale)
+{
+    text_to_draw[slot].str = str;
+    text_to_draw[slot].x = x;
+    text_to_draw[slot].y = y;
+    text_to_draw[slot].scale = scale;
+    counter++;
+    if (counter >= 5)
+        counter = 0;
 }

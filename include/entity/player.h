@@ -7,6 +7,7 @@ struct Input;
 class Player : virtual public Entity
 {
 public:
+	std::vector<Entity *> *others = nullptr;
 	Input*	game_input = nullptr;
 public:
 	Player() {};
@@ -23,5 +24,5 @@ private:
 	void	move_player(float x, float y, float z);
 private:
 	state	current_state = state::Idle;
-	float	speed = 0.07f;
+	float	speed = 3.5f;
 };

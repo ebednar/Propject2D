@@ -81,6 +81,8 @@ void window_size_callback(GLFWwindow* window, int width, int height)
 
 void	Events::process_input()
 {
+	game_input.button_interact.transition = 0;
+
 	game_input.axis_x = 0.0f;
 	game_input.axis_y = 0.0f;
 
@@ -97,4 +99,10 @@ void	Events::process_input()
 	game_input.button_down = keys[GLFW_KEY_DOWN];
 	game_input.button_right = keys[GLFW_KEY_RIGHT];
 	game_input.button_left = keys[GLFW_KEY_LEFT];
+
+	if (game_input.button_interact.is_down != keys[GLFW_KEY_E])
+	{
+		game_input.button_interact.is_down = keys[GLFW_KEY_E];
+		++game_input.button_interact.transition;
+	}
 }

@@ -583,6 +583,7 @@
     <ClInclude Include="include\skybox.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\tilemap.h" />
+    <ClInclude Include="include\timer.h" />
     <ClInclude Include="include\ui_text.h" />
     <ClInclude Include="include\editor\win_dialog.h" />
     <ClInclude Include="lib\GLFW\include\GLFW\glfw3.h" />
@@ -750,6 +751,7 @@
     <ClCompile Include="src\model.cpp" />
     <ClCompile Include="src\entity\obstacle.cpp" />
     <ClCompile Include="src\entity\player.cpp" />
+    <ClCompile Include="src\scene\load_scene.cpp" />
     <ClCompile Include="src\scene\parse_ent_options.cpp" />
     <ClCompile Include="src\render.cpp" />
     <ClCompile Include="src\sandbox.cpp" />
@@ -758,6 +760,7 @@
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\skybox.cpp" />
     <ClCompile Include="src\tilemap.cpp" />
+    <ClCompile Include="src\timer.cpp" />
     <ClCompile Include="src\ui_text.cpp" />
     <ClCompile Include="src\editor\win_dialog.cpp" />
   </ItemGroup>
